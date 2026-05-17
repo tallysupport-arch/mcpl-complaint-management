@@ -243,6 +243,49 @@
       .main{padding:14px}
       .title-wrap h2{font-size:26px}
     }
+
+
+    /* ===== Premium Colorful Upgrade Added ===== */
+    :root{
+      --violet:#7c3aed; --pink:#ec4899; --orange:#f97316; --cyan:#06b6d4;
+      --glass:rgba(255,255,255,.72);
+    }
+    body{background:
+      radial-gradient(circle at top left, rgba(124,58,237,.20), transparent 32%),
+      radial-gradient(circle at top right, rgba(6,182,212,.20), transparent 28%),
+      linear-gradient(180deg,#f8fbff,#eef4fb)!important;}
+    body.dark{background:
+      radial-gradient(circle at top left, rgba(124,58,237,.22), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(6,182,212,.16), transparent 30%),
+      linear-gradient(180deg,#020617,#0b1220)!important;}
+    .sidebar{background:linear-gradient(180deg,#21115f 0%,#0b1028 55%,#020617 100%)!important;box-shadow:16px 0 50px rgba(30,41,59,.16)}
+    .logo{background:linear-gradient(135deg,#ff7a18,#af2cff 55%,#2575fc)!important;box-shadow:0 12px 34px rgba(124,58,237,.42)!important}
+    .nav-btn.active,.nav-btn:hover{background:linear-gradient(135deg,rgba(124,58,237,.82),rgba(37,99,235,.72))!important;color:#fff!important;box-shadow:0 12px 28px rgba(37,99,235,.25)}
+    .title-wrap h2{background:linear-gradient(90deg,#1e1b4b,#2563eb,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    body.dark .title-wrap h2{background:linear-gradient(90deg,#c4b5fd,#67e8f9,#f9a8d4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#2563eb,#06b6d4)!important}
+    .btn-success{background:linear-gradient(135deg,#10b981,#22c55e,#06b6d4)!important}
+    .btn-danger{background:linear-gradient(135deg,#ef4444,#f97316,#ec4899)!important}
+    .card{backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.78));border:1px solid rgba(148,163,184,.28)!important}
+    body.dark .card{background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(15,23,42,.76));border-color:rgba(148,163,184,.18)!important}
+    .kpi-card{min-height:122px;color:#fff;border:none!important;transition:.22s transform,.22s box-shadow;box-shadow:0 18px 40px rgba(37,99,235,.16)!important}
+    .kpi-card:hover{transform:translateY(-4px)}
+    .kpi-card:nth-child(6n+1){background:linear-gradient(135deg,#7c3aed,#4f46e5)!important}
+    .kpi-card:nth-child(6n+2){background:linear-gradient(135deg,#2563eb,#06b6d4)!important}
+    .kpi-card:nth-child(6n+3){background:linear-gradient(135deg,#10b981,#22c55e)!important}
+    .kpi-card:nth-child(6n+4){background:linear-gradient(135deg,#f59e0b,#f97316)!important}
+    .kpi-card:nth-child(6n+5){background:linear-gradient(135deg,#ec4899,#ef4444)!important}
+    .kpi-card:nth-child(6n+6){background:linear-gradient(135deg,#0ea5e9,#6366f1)!important}
+    .kpi-card h3,.kpi-card .kpi-sub{color:rgba(255,255,255,.86)!important}.kpi-value{color:#fff!important}
+    .premium-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin:16px 0}.feature-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}.feature-card{padding:16px;border-radius:20px;background:linear-gradient(135deg,rgba(124,58,237,.14),rgba(6,182,212,.10));border:1px solid rgba(124,58,237,.16)}
+    .feature-icon{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:white;box-shadow:0 12px 26px rgba(37,99,235,.22);margin-bottom:10px}.feature-card h4{margin:0 0 6px}.feature-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+    .ai-panel{background:linear-gradient(135deg,#5b21b6,#2563eb 58%,#06b6d4)!important;color:white!important;position:relative;overflow:hidden}.ai-panel:after{content:"";position:absolute;right:-70px;top:-70px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.14)}.ai-panel h3,.ai-panel p{color:white!important}.ai-list{display:grid;gap:10px;margin-top:14px}.ai-item{padding:12px;border-radius:15px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16)}
+    .chart-card{padding:18px}.bar-row{display:grid;grid-template-columns:135px 1fr 54px;gap:10px;align-items:center;margin:13px 0}.bar-track{height:12px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#2563eb,#06b6d4)}.bar-label{font-size:13px;font-weight:700}.bar-value{font-size:13px;color:var(--muted);text-align:right}
+    .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(#2563eb 0 40%,#10b981 40% 66%,#f97316 66% 84%,#ec4899 84% 100%);display:grid;place-items:center}.donut-inner{width:94px;height:94px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;font-weight:900}.legend{display:grid;gap:10px}.legend span{display:inline-flex;width:11px;height:11px;border-radius:50%;margin-right:8px}.spark{height:120px;display:flex;gap:8px;align-items:end;padding-top:12px}.spark i{flex:1;border-radius:12px 12px 4px 4px;background:linear-gradient(180deg,#7c3aed,#06b6d4);min-height:16px;box-shadow:0 8px 20px rgba(37,99,235,.12)}
+    .floating-action{position:fixed;right:22px;bottom:22px;z-index:40;width:58px;height:58px;border:none;border-radius:20px;background:linear-gradient(135deg,#ec4899,#7c3aed,#2563eb);color:#fff;font-size:28px;box-shadow:0 20px 50px rgba(124,58,237,.38);cursor:pointer}.toast{background:linear-gradient(135deg,#0f172a,#2563eb)!important}
+    @media (max-width:1280px){.premium-grid{grid-template-columns:1fr}.feature-strip{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:900px){.feature-strip{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}.bar-value{text-align:left}}
+
   </style>
 </head>
 <body>
@@ -258,20 +301,30 @@
         <input type="file" id="importClientMasterInput" accept=".xlsx,.xls" class="hidden" />
       </div>
       <h2>Welcome back</h2>
-      <p>Use demo login or your backend login if connected.</p>
-      <div class="field">
-        <label>Username</label>
-        <input id="loginUser" value="admin" placeholder="Enter username" />
-      </div>
-      <div class="field" style="margin-top:12px;">
-        <label>Password</label>
-        <input id="loginPass" value="1234" type="password" placeholder="Enter password" />
-      </div>
+<p>Use your login credentials.</p>
+
+<div class="field">
+  <label>Username</label>
+  <input 
+    id="loginUser"
+    placeholder="Enter username"
+    autocomplete="off"
+  />
+</div>
+
+<div class="field" style="margin-top:12px;">
+  <label>Password</label>
+  <input 
+    id="loginPass"
+    type="password"
+    placeholder="Enter password"
+    autocomplete="new-password"
+  />
+</div>
       <div class="actions-line" style="margin-top:18px;">
         <button class="btn btn-primary" id="loginBtn">Login</button>
         <button class="btn btn-soft" id="themeBtnLogin">🌙 Theme</button>
       </div>
-      <p class="note" style="margin-top:14px;">Default demo login: <strong>admin / 1234</strong></p>
     </div>
   </div>
 
@@ -356,6 +409,40 @@
               </div>
             </div>
             <div id="alertList" class="history-list"></div>
+          </div>
+        </div>
+
+
+
+        <div class="feature-strip">
+          <div class="feature-card"><div class="feature-icon">🤖</div><h4>AI Categorization</h4><p>Complaint text ke basis par auto priority, issue type aur suggested engineer.</p></div>
+          <div class="feature-card"><div class="feature-icon">⏱️</div><h4>SLA Live Tracking</h4><p>Near due aur breached tickets ke liye instant management visibility.</p></div>
+          <div class="feature-card"><div class="feature-icon">🔔</div><h4>Smart Alerts</h4><p>Email, WhatsApp aur dashboard notification flow ke liye ready layout.</p></div>
+          <div class="feature-card"><div class="feature-icon">📊</div><h4>Advanced Analytics</h4><p>Department-wise, priority-wise aur monthly trend insights.</p></div>
+        </div>
+
+        <div class="premium-grid">
+          <div class="card chart-card">
+            <div class="panel-title"><div><h3>Complaint Trend & Category Analytics</h3><p>Colorful management view with live data from complaint register.</p></div></div>
+            <div id="categoryBars"></div>
+          </div>
+          <div class="card ai-panel panel">
+            <div class="panel-title"><div><h3>AI Assistant Insights</h3><p>Smart suggestions based on current complaints.</p></div></div>
+            <div class="ai-list" id="aiInsightList"></div>
+          </div>
+        </div>
+
+        <div class="premium-grid">
+          <div class="card chart-card">
+            <div class="panel-title"><div><h3>Monthly Ticket Volume</h3><p>Visual bar trend for quick review.</p></div></div>
+            <div class="spark" id="monthlySpark"></div>
+          </div>
+          <div class="card chart-card">
+            <div class="panel-title"><div><h3>Priority Mix</h3><p>Critical, high, medium and low distribution.</p></div></div>
+            <div class="donut-wrap">
+              <div class="donut"><div class="donut-inner"><span id="donutTotal">0<br><small>Total</small></span></div></div>
+              <div class="legend" id="priorityLegend"></div>
+            </div>
           </div>
         </div>
 
@@ -607,6 +694,8 @@
       </section>
     </main>
   </div>
+
+  <button class="floating-action" id="floatingNewComplaint" title="New Complaint">+</button>
 
   <div class="modal-backdrop" id="importChoiceModalBackdrop">
     <div class="modal" style="max-width:620px;">
@@ -864,17 +953,37 @@ function saveLocal(){
 
     
 async function api(path, options={}){
+  const method = String(options.method || 'GET').toUpperCase();
   const headers = {
     'Content-Type':'application/json',
+    'Cache-Control':'no-cache',
     ...(currentUser ? {'x-role': String(currentUser.role || '').toLowerCase()} : {}),
     ...(options.headers || {})
   };
-  const res = await fetch(path, {...options, headers});
-  const text = await res.text();
+
+  let finalPath = path;
+  if(method === 'GET'){
+    const sep = finalPath.includes('?') ? '&' : '?';
+    finalPath = `${finalPath}${sep}_ts=${Date.now()}`;
+  }
+
+  const res = await fetch(finalPath, {
+    ...options,
+    method,
+    headers,
+    cache:'no-store'
+  });
+
+  const responseText = await res.text();
   let data = {};
-  try{ data = text ? JSON.parse(text) : {}; }catch{ data = { raw:text }; }
+  try{ data = responseText ? JSON.parse(responseText) : {}; }catch{ data = { raw:responseText }; }
   if(!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
   return data;
+}
+
+async function refreshDataAndUI(){
+  await loadData();
+  renderAll();
 }
 
 function normalizeComplaintRow(r){
@@ -1086,6 +1195,38 @@ async function loadData(){
       document.getElementById('topPriorityBody').innerHTML = topRows.length ? topRows.map(x=>`<tr><td>${escapeHtml(x.ticket)}</td><td>${escapeHtml(x.clientName)}</td><td>${escapeHtml(x.issueType)}</td><td>${getPriorityBadge(x.priority)}</td><td>${getStatusBadge(x.status)}</td><td>${getSlaBadge(getSlaStatus(x))}</td><td>${x.followupDate ? fmtDate(x.followupDate) : '-'}</td><td>${escapeHtml(x.assignedTo || '-')}</td></tr>`).join('') : `<tr><td colspan="8" class="empty-state">No open tickets.</td></tr>`;
     }
 
+
+
+    function renderPremiumDashboard(){
+      const categoryTarget=document.getElementById('categoryBars');
+      const aiTarget=document.getElementById('aiInsightList');
+      const sparkTarget=document.getElementById('monthlySpark');
+      const legendTarget=document.getElementById('priorityLegend');
+      const totalTarget=document.getElementById('donutTotal');
+      if(!categoryTarget || !aiTarget) return;
+      const m=getMetrics();
+      const categories=countBy(complaints, x=>x.issueType || 'Other');
+      const max=Math.max(1,...Object.values(categories));
+      categoryTarget.innerHTML=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,7).map(([name,val])=>`<div class="bar-row"><div class="bar-label">${escapeHtml(name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(8,Math.round((val/max)*100))}%"></div></div><div class="bar-value">${val}</div></div>`).join('') || '<div class="empty-state">No complaint data available.</div>';
+      const ai=[];
+      if(m.breached>0) ai.push(`🚨 ${m.breached} SLA breached tickets ko manager escalation chahiye.`);
+      if(m.critical>0) ai.push(`🔥 ${m.critical} critical open tickets ko first priority rakhein.`);
+      if(m.followupDue>0) ai.push(`📞 ${m.followupDue} follow-up due cases customer update ke liye pending hain.`);
+      if(m.amcExpiring>0) ai.push(`📅 ${m.amcExpiring} AMC renewals next 30 days me expiring hain.`);
+      if(!ai.length) ai.push('✅ Operations stable hai. No urgent AI alerts found.');
+      aiTarget.innerHTML=ai.map(x=>`<div class="ai-item">${escapeHtml(x)}</div>`).join('');
+      const monthCounts={};
+      complaints.forEach(x=>{ const d=new Date(x.createdAt||x.created_at||''); if(!Number.isNaN(d.getTime())){ const key=d.toLocaleString('en',{month:'short'}); monthCounts[key]=(monthCounts[key]||0)+1; }});
+      const vals=Object.values(monthCounts); const maxMonth=Math.max(1,...vals);
+      sparkTarget.innerHTML=(vals.length?Object.entries(monthCounts):[['Jan',1],['Feb',2],['Mar',3],['Apr',2],['May',4],['Jun',5]]).slice(-8).map(([mon,val])=>`<i title="${escapeHtml(mon)}: ${val}" style="height:${Math.max(18,Math.round((val/maxMonth)*110))}px"></i>`).join('');
+      const priorities=countBy(complaints, x=>x.priority || 'Low');
+      if(totalTarget) totalTarget.innerHTML=`${complaints.length}<br><small>Total</small>`;
+      if(legendTarget){
+        const colors={Critical:'#ef4444',High:'#f97316',Medium:'#2563eb',Low:'#10b981'};
+        legendTarget.innerHTML=['Critical','High','Medium','Low'].map(k=>`<div><span style="background:${colors[k]}"></span>${k}: <strong>${priorities[k]||0}</strong></div>`).join('');
+      }
+    }
+
     function getAmcStatus(item){
       const end = new Date(item.end).getTime();
       const now = new Date(today()).getTime();
@@ -1166,6 +1307,7 @@ async function loadData(){
     function renderAll(){
       renderDatalists();
       renderDashboard();
+      renderPremiumDashboard();
       renderComplaints();
       renderAmc();
       renderReports();
@@ -1205,18 +1347,18 @@ function renderUsersSection(){
     function resetUserForm(){ userEditId = null; document.getElementById('userModalTitle').textContent='Add User'; document.getElementById('uUsername').value=''; document.getElementById('uPassword').value=''; document.getElementById('uRole').value='Engineer'; }
 
     
-async function saveClientMaster(){ const data={name:document.getElementById('mClientName').value.trim(), mobile:document.getElementById('mClientMobile').value.trim(), email:document.getElementById('mClientEmail').value.trim(), address:document.getElementById('mClientAddress').value.trim()}; if(!data.name){ alert('Client name required'); return; } try{ if(clientMasterEditId) await api(`/client-master/${clientMasterEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/client-master', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeClientMasterModal(); resetClientMasterForm(); toast('Client master saved'); }catch(err){ alert(err.message || 'Client save failed'); } }
+async function saveClientMaster(){ const data={name:document.getElementById('mClientName').value.trim(), mobile:document.getElementById('mClientMobile').value.trim(), email:document.getElementById('mClientEmail').value.trim(), address:document.getElementById('mClientAddress').value.trim()}; if(!data.name){ alert('Client name required'); return; } try{ if(clientMasterEditId) await api(`/client-master/${clientMasterEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/client-master', { method:'POST', body: JSON.stringify(data) }); await refreshDataAndUI(); closeClientMasterModal(); resetClientMasterForm(); toast('Client master saved'); }catch(err){ alert(err.message || 'Client save failed'); } }
     
-async function saveSuggestion(){ const editId=document.getElementById('sValue').dataset.editId || ''; const item={type:document.getElementById('sType').value, value:document.getElementById('sValue').value.trim()}; if(!item.value){ alert('Value required'); return; } try{ if(editId) await api(`/suggestion-master/${editId}`, { method:'PUT', body: JSON.stringify(item) }); else await api('/suggestion-master', { method:'POST', body: JSON.stringify(item) }); await loadData(); renderAll(); closeSuggestionModal(); resetSuggestionForm(); toast('Suggestion saved'); }catch(err){ alert(err.message || 'Suggestion save failed'); } }
+async function saveSuggestion(){ const editId=document.getElementById('sValue').dataset.editId || ''; const item={type:document.getElementById('sType').value, value:document.getElementById('sValue').value.trim()}; if(!item.value){ alert('Value required'); return; } try{ if(editId) await api(`/suggestion-master/${editId}`, { method:'PUT', body: JSON.stringify(item) }); else await api('/suggestion-master', { method:'POST', body: JSON.stringify(item) }); await refreshDataAndUI(); closeSuggestionModal(); resetSuggestionForm(); toast('Suggestion saved'); }catch(err){ alert(err.message || 'Suggestion save failed'); } }
     
-async function saveUser(){ const data={username:document.getElementById('uUsername').value.trim(), password:document.getElementById('uPassword').value.trim(), role:document.getElementById('uRole').value}; if(!data.username || !data.password){ alert('Username and password required'); return; } try{ if(userEditId) await api(`/users/${userEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/users', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeUserModal(); resetUserForm(); toast('User saved'); }catch(err){ alert(err.message || 'User save failed'); } }
+async function saveUser(){ const data={username:document.getElementById('uUsername').value.trim(), password:document.getElementById('uPassword').value.trim(), role:document.getElementById('uRole').value}; if(!data.username || !data.password){ alert('Username and password required'); return; } try{ if(userEditId) await api(`/users/${userEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/users', { method:'POST', body: JSON.stringify(data) }); await refreshDataAndUI(); closeUserModal(); resetUserForm(); toast('User saved'); }catch(err){ alert(err.message || 'User save failed'); } }
 
     window.editClientMaster = function(id){ const c = clientMaster.find(x=>x.id===id); if(!c) return; clientMasterEditId=id; document.getElementById('clientMasterModalTitle').textContent='Edit Client Master'; document.getElementById('mClientName').value=c.name||''; document.getElementById('mClientMobile').value=c.mobile||''; document.getElementById('mClientEmail').value=c.email||''; document.getElementById('mClientAddress').value=c.address||''; openClientMasterModal(); }
-    window.deleteClientMaster = async function(id){ const c = clientMaster.find(x=>x.id===id); if(!c) return; if(!confirm(`Delete client master for ${c.name}?`)) return; try{ await api(`/client-master/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Client master deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.deleteClientMaster = async function(id){ const c = clientMaster.find(x=>x.id===id); if(!c) return; if(!confirm(`Delete client master for ${c.name}?`)) return; try{ await api(`/client-master/${id}`, { method:'DELETE' }); await refreshDataAndUI(); toast('Client master deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
     window.editSuggestion = function(id){ const s = suggestionMaster.find(x=>x.id===id); if(!s) return; document.getElementById('suggestionModalTitle').textContent='Edit Suggestion'; document.getElementById('sType').value=s.type; document.getElementById('sValue').value=s.value; document.getElementById('sValue').dataset.editId=s.id; openSuggestionModal(); }
-    window.deleteSuggestion = async function(id){ const s=suggestionMaster.find(x=>x.id===id); if(!s) return; if(!confirm(`Delete suggestion ${s.value}?`)) return; try{ await api(`/suggestion-master/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Suggestion deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.deleteSuggestion = async function(id){ const s=suggestionMaster.find(x=>x.id===id); if(!s) return; if(!confirm(`Delete suggestion ${s.value}?`)) return; try{ await api(`/suggestion-master/${id}`, { method:'DELETE' }); await refreshDataAndUI(); toast('Suggestion deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
     window.editUser = function(id){ const u = users.find(x=>x.id===id); if(!u) return; userEditId=id; document.getElementById('userModalTitle').textContent='Edit User'; document.getElementById('uUsername').value=u.username; document.getElementById('uPassword').value=u.password; document.getElementById('uRole').value=u.role; openUserModal(); }
-    window.deleteUser = async function(id){ const u=users.find(x=>x.id===id); if(!u) return; if(u.username==='admin'){ alert('Default admin is protected'); return; } if(!confirm(`Delete user ${u.username}?`)) return; try{ await api(`/users/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('User deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.deleteUser = async function(id){ const u=users.find(x=>x.id===id); if(!u) return; if(u.username==='admin'){ alert('Default admin is protected'); return; } if(!confirm(`Delete user ${u.username}?`)) return; try{ await api(`/users/${id}`, { method:'DELETE' }); await refreshDataAndUI(); toast('User deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
 
     function fillComplaintFromClientMaster(name){ const c = clientMaster.find(x=>x.name.toLowerCase()===String(name||'').trim().toLowerCase()); if(!c) return; if(!document.getElementById('fMobileNo').value) document.getElementById('fMobileNo').value=c.mobile||''; if(!document.getElementById('fEmail').value) document.getElementById('fEmail').value=c.email||''; if(!document.getElementById('fAddress').value) document.getElementById('fAddress').value=c.address||''; }
 
@@ -1248,10 +1390,10 @@ async function saveUser(){ const data={username:document.getElementById('uUserna
     }
 
     
-async function handleExcelImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/complaints',{ method:'POST', body: JSON.stringify({ rows }) }); await loadData(); renderAll(); closeImportChoiceModal(); alert(`Complaint import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Complaint import failed'); } }
+async function handleExcelImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/complaints',{ method:'POST', body: JSON.stringify({ rows }) }); await refreshDataAndUI(); closeImportChoiceModal(); alert(`Complaint import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Complaint import failed'); } }
 
     
-async function handleClientMasterImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/client-master',{ method:'POST', body: JSON.stringify({ rows }) }); await loadData(); renderAll(); closeImportChoiceModal(); alert(`Client master import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Client master import failed'); } }
+async function handleClientMasterImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/client-master',{ method:'POST', body: JSON.stringify({ rows }) }); await refreshDataAndUI(); closeImportChoiceModal(); alert(`Client master import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Client master import failed'); } }
     
     function exportExcel(){ if(typeof XLSX==='undefined'){ alert('Excel library not loaded. Please use internet/CDN access.'); return; } const rows = filterComplaints().map(x=>({Ticket:x.ticket,'Client Name':x.clientName,Mobile:x.mobileNo,Email:x.email,Address:x.address,'Issue Type':x.issueType,'Issue Details':x.issueDetails,'Assigned To':x.assignedTo,Status:x.status,Priority:x.priority,'SLA Status':getSlaStatus(x),'SLA Due':x.slaDue?fmtDateTime(x.slaDue):'',Created:fmtDateTime(x.createdAt),Closed:x.closedAt?fmtDateTime(x.closedAt):'','Follow-up':x.followupDate,'Escalation Level':x.escalationLevel,'Escalated To':x.escalatedTo,Remarks:x.remarks,'Internal Notes':x.internalNotes})); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Complaints'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(clientMaster.map(x=>({Name:x.name,Mobile:x.mobile,Email:x.email,Address:x.address}))), 'Client Master'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(users.map(x=>({Username:x.username,Role:x.role,Created:x.createdAt}))), 'Users'); XLSX.writeFile(wb,'complaint_tracker_advanced_export.xlsx'); }
 
@@ -1418,7 +1560,7 @@ async function saveComplaint(){
   if(!data.clientName || !data.issueType || !data.issueDetails){ alert('Client name, issue type and issue details are required.'); return; }
   const masterEmail=getClientMasterEmailByName(data.clientName); if(masterEmail) data.email=masterEmail;
   const payload={ clientName:data.clientName, mobile:data.mobileNo, email:data.email, address:data.address, issueType:data.issueType, issueDetails:data.issueDetails, assignedTo:data.assignedTo, status:data.status || 'Open', priority:data.priority || 'Medium', slaDue:data.slaDue ? new Date(data.slaDue).toISOString() : '', followupDate:data.followupDate || '', escalationLevel:data.escalationLevel || '', escalatedTo:data.escalatedTo || '', escalationRemarks:data.escalationRemarks || '', remarks:data.remarks || '', internalNotes:data.internalNotes || '' };
-  try{ let savedId=complaintEditId; if(complaintEditId) await api(`/complaints/${complaintEditId}`, { method:'PUT', body: JSON.stringify(payload) }); else { const out=await api('/complaints', { method:'POST', body: JSON.stringify(payload) }); savedId=String(out.id); } await loadData(); renderAll(); closeComplaintModal(); resetComplaintForm(); toast('Complaint saved'); if(!complaintEditId){ const created=complaints.find(x=>x.id===String(savedId)); if(created) await askAndSendComplaintEmail(created); } }catch(err){ alert(err.message || 'Complaint save failed'); }
+  try{ let savedId=complaintEditId; if(complaintEditId) await api(`/complaints/${complaintEditId}`, { method:'PUT', body: JSON.stringify(payload) }); else { const out=await api('/complaints', { method:'POST', body: JSON.stringify(payload) }); savedId=String(out.id); } await refreshDataAndUI(); closeComplaintModal(); resetComplaintForm(); toast('Complaint saved'); if(!complaintEditId){ const created=complaints.find(x=>x.id===String(savedId)); if(created) await askAndSendComplaintEmail(created); } }catch(err){ alert(err.message || 'Complaint save failed'); }
 }
 
 window.editComplaint = function(id){
@@ -1542,7 +1684,7 @@ window.changeComplaintStatus = async function(id, newStatus){
       await sendComplaintEmail(item, 'manual');
     }
 
-    window.deleteComplaint = async function(id){ const item=complaints.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete ${item.ticket}?`)) return; try{ await api(`/complaints/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Complaint deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.deleteComplaint = async function(id){ const item=complaints.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete ${item.ticket}?`)) return; try{ await api(`/complaints/${id}`, { method:'DELETE' }); await refreshDataAndUI(); toast('Complaint deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
 
     function resetAmcForm(){
       amcEditId = null;
@@ -1552,7 +1694,7 @@ window.changeComplaintStatus = async function(id, newStatus){
     }
 
     
-async function saveAmc(){ const data={ clientName:document.getElementById('aClientName').value.trim(), type:document.getElementById('aType').value, start:document.getElementById('aStart').value, end:document.getElementById('aEnd').value, amount:document.getElementById('aAmount').value, renewalAmount:document.getElementById('aRenewalAmount').value, assigned:document.getElementById('aAssigned').value.trim(), note:document.getElementById('aNote').value.trim() }; if(!data.clientName || !data.start || !data.end){ alert('Client, start date and end date are required.'); return; } try{ if(amcEditId) await api(`/amc/${amcEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/amc', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeAmcModal(); resetAmcForm(); toast('AMC saved'); }catch(err){ alert(err.message || 'AMC save failed'); } }
+async function saveAmc(){ const data={ clientName:document.getElementById('aClientName').value.trim(), type:document.getElementById('aType').value, start:document.getElementById('aStart').value, end:document.getElementById('aEnd').value, amount:document.getElementById('aAmount').value, renewalAmount:document.getElementById('aRenewalAmount').value, assigned:document.getElementById('aAssigned').value.trim(), note:document.getElementById('aNote').value.trim() }; if(!data.clientName || !data.start || !data.end){ alert('Client, start date and end date are required.'); return; } try{ if(amcEditId) await api(`/amc/${amcEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/amc', { method:'POST', body: JSON.stringify(data) }); await refreshDataAndUI(); closeAmcModal(); resetAmcForm(); toast('AMC saved'); }catch(err){ alert(err.message || 'AMC save failed'); } }
 
     window.editAmc = function(id){
       const item = amcs.find(x=>x.id===id); if(!item) return;
@@ -1569,18 +1711,30 @@ async function saveAmc(){ const data={ clientName:document.getElementById('aClie
       openAmcModal();
     }
 
-    window.renewAmc = function(id){
+    window.renewAmc = async function(id){
       const item = amcs.find(x=>x.id===id); if(!item) return;
       const start = new Date(item.end); start.setDate(start.getDate()+1);
       const end = new Date(start); end.setFullYear(end.getFullYear()+1);
-      amcs.unshift({
-        id: genId('amc'), clientName:item.clientName, type:item.type, start:start.toISOString().slice(0,10), end:end.toISOString().slice(0,10),
-        amount:item.renewalAmount || item.amount, renewalAmount:item.renewalAmount || item.amount, assigned:item.assigned, note:'Renewed from previous AMC'
-      });
-      saveLocal(); renderAll(); toast('AMC renewed for 1 year');
+      const payload = {
+        clientName:item.clientName,
+        type:item.type,
+        start:start.toISOString().slice(0,10),
+        end:end.toISOString().slice(0,10),
+        amount:item.renewalAmount || item.amount,
+        renewalAmount:item.renewalAmount || item.amount,
+        assigned:item.assigned,
+        note:'Renewed from previous AMC'
+      };
+      try{
+        await api('/amc', { method:'POST', body: JSON.stringify(payload) });
+        await refreshDataAndUI();
+        toast('AMC renewed for 1 year');
+      }catch(err){
+        alert(err.message || 'AMC renewal failed');
+      }
     }
 
-    window.deleteAmc = async function(id){ const item=amcs.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete AMC for ${item.clientName}?`)) return; try{ await api(`/amc/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('AMC deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.deleteAmc = async function(id){ const item=amcs.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete AMC for ${item.clientName}?`)) return; try{ await api(`/amc/${id}`, { method:'DELETE' }); await refreshDataAndUI(); toast('AMC deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
 
     function exportCsv(){
       const rows = filterComplaints();
@@ -1667,6 +1821,7 @@ function doLogout(){
       document.getElementById('themeBtnSide').addEventListener('click', toggleTheme);
       document.querySelectorAll('.nav-btn[data-section]').forEach(btn=>btn.addEventListener('click', ()=>switchSection(btn.dataset.section)));
       document.getElementById('openComplaintBtn').addEventListener('click', ()=>{ resetComplaintForm(); openComplaintModal(); });
+      document.getElementById('floatingNewComplaint').addEventListener('click', ()=>{ resetComplaintForm(); openComplaintModal(); });
       document.getElementById('navNewComplaint').addEventListener('click', ()=>{ switchSection('complaintsSection'); resetComplaintForm(); openComplaintModal(); });
       document.getElementById('openAMCBtn').addEventListener('click', ()=>{ resetAmcForm(); openAmcModal(); });
       document.getElementById('navNewAMC').addEventListener('click', ()=>{ switchSection('amcSection'); resetAmcForm(); openAmcModal(); });
