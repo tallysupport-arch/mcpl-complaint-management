@@ -1,0 +1,1 @@
+Extract zip, rename .env.example to .env, fill Gmail + app password, run npm install and npm start, then open http://localhost:3000 .

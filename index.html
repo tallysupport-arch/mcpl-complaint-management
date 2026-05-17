@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complaint Tracker Advanced</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root{
+      --bg:#eef4fb;
+      --bg-soft:#f8fbff;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#dbe4ef;
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --success:#16a34a;
+      --warning:#f59e0b;
+      --danger:#dc2626;
+      --info:#0891b2;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --shadow-lg:0 20px 60px rgba(15,23,42,.14);
+      --radius:18px;
+      --radius-sm:12px;
+      --sidebar:#0f172a;
+      --sidebar-text:#dbeafe;
+      --badge-open-bg:#dbeafe;
+      --badge-open-text:#1d4ed8;
+      --badge-progress-bg:#ffedd5;
+      --badge-progress-text:#c2410c;
+      --badge-pending-bg:#fef9c3;
+      --badge-pending-text:#a16207;
+      --badge-closed-bg:#dcfce7;
+      --badge-closed-text:#15803d;
+      --badge-critical-bg:#fee2e2;
+      --badge-critical-text:#b91c1c;
+      --badge-high-bg:#ffedd5;
+      --badge-high-text:#c2410c;
+      --badge-medium-bg:#e0f2fe;
+      --badge-medium-text:#0369a1;
+      --badge-low-bg:#e2e8f0;
+      --badge-low-text:#334155;
+    }
+
+    body.dark{
+      --bg:#020617;
+      --bg-soft:#0b1220;
+      --card:#0f172a;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --border:#233246;
+      --sidebar:#020617;
+      --sidebar-text:#dbeafe;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --shadow-lg:0 20px 60px rgba(0,0,0,.35);
+      --badge-open-bg:rgba(37,99,235,.18);
+      --badge-open-text:#93c5fd;
+      --badge-progress-bg:rgba(245,158,11,.18);
+      --badge-progress-text:#fdba74;
+      --badge-pending-bg:rgba(250,204,21,.15);
+      --badge-pending-text:#fde68a;
+      --badge-closed-bg:rgba(22,163,74,.18);
+      --badge-closed-text:#86efac;
+      --badge-critical-bg:rgba(220,38,38,.20);
+      --badge-critical-text:#fca5a5;
+      --badge-high-bg:rgba(249,115,22,.18);
+      --badge-high-text:#fdba74;
+      --badge-medium-bg:rgba(8,145,178,.18);
+      --badge-medium-text:#67e8f9;
+      --badge-low-bg:rgba(100,116,139,.18);
+      --badge-low-text:#cbd5e1;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,var(--bg-soft),var(--bg));color:var(--text)}
+    .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    .sidebar{
+      background:linear-gradient(180deg,var(--sidebar),#111c31);
+      color:var(--sidebar-text);
+      padding:24px 18px;
+      position:sticky;top:0;height:100vh;border-right:1px solid rgba(255,255,255,.08)
+    }
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:26px}
+    .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;box-shadow:0 12px 30px rgba(37,99,235,.35)}
+    .brand h1{font-size:18px;line-height:1.15;margin:0}
+    .brand small{display:block;color:#93c5fd;margin-top:4px}
+    .nav-section{margin-top:24px}
+    .nav-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#93c5fd;margin:0 0 10px 10px}
+    .nav-btn{width:100%;display:flex;align-items:center;gap:10px;border:none;border-radius:14px;padding:12px 14px;background:transparent;color:var(--sidebar-text);cursor:pointer;font-weight:600;margin-bottom:8px;text-align:left}
+    .nav-btn.active,.nav-btn:hover{background:rgba(255,255,255,.09)}
+    .main{padding:22px}
+    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+    .title-wrap h2{margin:0;font-size:32px;letter-spacing:-.02em}
+    .title-wrap p{margin:8px 0 0;color:var(--muted)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{border:none;border-radius:14px;padding:11px 16px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);transition:.2s transform,.2s box-shadow}
+    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+    .btn-success{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+    .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
+    .btn-dark{background:linear-gradient(135deg,#334155,#0f172a);color:#fff}
+    .btn-soft{background:var(--card);color:var(--text);border:1px solid var(--border)}
+    .btn-icon{width:46px;height:46px;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+
+    .grid{display:grid;gap:16px}
+    .kpi-grid{grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .kpi-card{padding:18px;position:relative;overflow:hidden}
+    .kpi-card::after{content:"";position:absolute;right:-10px;top:-10px;width:90px;height:90px;border-radius:50%;background:rgba(37,99,235,.08)}
+    .kpi-card h3{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:700}
+    .kpi-value{font-size:30px;font-weight:800;line-height:1}
+    .kpi-sub{margin-top:8px;font-size:12px;color:var(--muted)}
+
+    .panel{padding:18px}
+    .panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+    .panel-title h3{margin:0;font-size:18px}
+    .panel-title p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .actions-line{display:flex;gap:10px;flex-wrap:wrap}
+
+    .search-row{display:grid;grid-template-columns:1.5fr repeat(4,1fr) auto auto;gap:12px;align-items:end}
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field label{font-size:13px;font-weight:700;color:var(--muted)}
+    .field input,.field select,.field textarea{width:100%;padding:12px 13px;border-radius:13px;border:1px solid var(--border);background:var(--card);color:var(--text);outline:none}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .filters-advanced{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:12px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:var(--bg-soft);font-size:12px;font-weight:700;cursor:pointer}
+    .chip.active{background:rgba(37,99,235,.12);border-color:rgba(37,99,235,.3);color:var(--primary)}
+
+    .summary-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .mini-stat{padding:16px;border:1px dashed var(--border);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+    .mini-stat h4{margin:0 0 8px;font-size:12px;color:var(--muted)}
+    .mini-stat div{font-size:24px;font-weight:800}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:1400px}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;font-size:13px}
+    th{position:sticky;top:0;background:var(--card);z-index:2}
+    tbody tr:hover td{background:rgba(37,99,235,.04)}
+    tbody tr.row-overdue td{background:rgba(220,38,38,.04)}
+    tbody tr.row-critical td:first-child{border-left:4px solid var(--danger)}
+
+    .badge{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+    .status-open{background:var(--badge-open-bg);color:var(--badge-open-text)}
+    .status-progress{background:var(--badge-progress-bg);color:var(--badge-progress-text)}
+    .status-pending{background:var(--badge-pending-bg);color:var(--badge-pending-text)}
+    .status-closed{background:var(--badge-closed-bg);color:var(--badge-closed-text)}
+    .priority-critical{background:var(--badge-critical-bg);color:var(--badge-critical-text)}
+    .priority-high{background:var(--badge-high-bg);color:var(--badge-high-text)}
+    .priority-medium{background:var(--badge-medium-bg);color:var(--badge-medium-text)}
+    .priority-low{background:var(--badge-low-bg);color:var(--badge-low-text)}
+    .sla-ok{background:rgba(22,163,74,.14);color:var(--success)}
+    .sla-near{background:rgba(245,158,11,.16);color:#b45309}
+    .sla-breach{background:rgba(220,38,38,.16);color:var(--danger)}
+    .sla-na{background:rgba(100,116,139,.16);color:var(--muted)}
+
+    .table-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .tiny-btn{border:none;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer}
+    .tiny-view{background:rgba(37,99,235,.14);color:var(--primary)}
+    .tiny-edit{background:rgba(8,145,178,.14);color:var(--info)}
+    .tiny-close{background:rgba(22,163,74,.14);color:var(--success)}
+    .tiny-delete{background:rgba(220,38,38,.14);color:var(--danger)}
+
+    .status-select{
+      width:160px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+      font-weight:600;
+      outline:none;
+    }
+    .status-select:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .section{display:none}
+    .section.active{display:block}
+
+
+    .modal-card{width:min(560px,96vw);max-height:90vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);padding:22px}
+    .modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .modal-head h3{margin:0 0 6px 0;font-size:24px}
+    .modal-head p{margin:0;color:var(--muted);font-size:13px}
+    .form-grid.cols-1{grid-template-columns:1fr}
+    .field.full{grid-column:1 / -1}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+    .modal-backdrop.show{display:flex}
+    .modal{width:min(1180px,96vw);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg)}
+    .modal.small{width:min(760px,96vw)}
+    .modal-header{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:14px}
+    .modal-header h3{margin:0}
+    .modal-body{padding:20px 22px}
+    .modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+    .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .form-grid .span-2{grid-column:span 2}
+    .form-grid .span-4{grid-column:span 4}
+    textarea{min-height:94px;resize:vertical}
+
+    .history-list{display:grid;gap:12px}
+    .history-item{padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--bg-soft)}
+    .history-item strong{display:block;margin-bottom:6px}
+    .history-time{font-size:12px;color:var(--muted)}
+    .timeline{display:grid;gap:12px}
+    .timeline-row{padding:14px 16px;border:1px solid var(--border);border-radius:16px;position:relative;background:var(--bg-soft)}
+    .timeline-row::before{content:"";position:absolute;left:-7px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+    .timeline-wrap{padding-left:16px;border-left:2px dashed rgba(37,99,235,.26)}
+
+    .login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe,#eff6ff 30%,#e2e8f0 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+    body.dark .login-screen{background:linear-gradient(135deg,#020617,#0f172a 45%,#111827)}
+    .login-card{width:min(460px,96vw);padding:28px;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-radius:28px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.45)}
+    body.dark .login-card{background:rgba(15,23,42,.9);border-color:rgba(255,255,255,.08)}
+    .login-card h2{margin:0 0 8px;font-size:30px}
+    .login-card p{margin:0 0 18px;color:var(--muted)}
+    .hidden{display:none !important}
+    .note{font-size:12px;color:var(--muted)}
+    .empty-state{padding:28px;text-align:center;color:var(--muted)}
+    .amc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .amc-list{display:grid;gap:12px;margin-top:14px}
+    .amc-item{padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--bg-soft);display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+    .toast-wrap{position:fixed;right:16px;bottom:16px;display:grid;gap:10px;z-index:120}
+    .toast{padding:12px 14px;border-radius:14px;color:#fff;background:#0f172a;box-shadow:var(--shadow-lg);min-width:260px}
+
+    @media (max-width: 1280px){
+      .kpi-grid{grid-template-columns:repeat(3,1fr)}
+      .search-row{grid-template-columns:repeat(3,1fr)}
+      .filters-advanced{grid-template-columns:repeat(3,1fr)}
+      .summary-layout{grid-template-columns:1fr}
+      .form-grid,.amc-grid{grid-template-columns:repeat(2,1fr)}
+      .form-grid .span-4{grid-column:span 2}
+      .form-grid .span-2{grid-column:span 2}
+    }
+    @media (max-width: 900px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .kpi-grid,.search-row,.filters-advanced,.form-grid,.amc-grid,.mini-grid{grid-template-columns:1fr}
+      .form-grid .span-2,.form-grid .span-4{grid-column:span 1}
+      .main{padding:14px}
+      .title-wrap h2{font-size:26px}
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="brand" style="margin-bottom:14px;">
+        <div class="logo">CT</div>
+        <div>
+          <h1>Complaint Tracker Advanced</h1>
+          <small>Service Desk / AMC / SLA Dashboard</small>
+        </div>
+        <input type="file" id="importComplaintsInput" accept=".xlsx,.xls" class="hidden" />
+        <input type="file" id="importClientMasterInput" accept=".xlsx,.xls" class="hidden" />
+      </div>
+      <h2>Welcome back</h2>
+      <p>Use demo login or your backend login if connected.</p>
+      <div class="field">
+        <label>Username</label>
+        <input id="loginUser" value="admin" placeholder="Enter username" />
+      </div>
+      <div class="field" style="margin-top:12px;">
+        <label>Password</label>
+        <input id="loginPass" value="1234" type="password" placeholder="Enter password" />
+      </div>
+      <div class="actions-line" style="margin-top:18px;">
+        <button class="btn btn-primary" id="loginBtn">Login</button>
+        <button class="btn btn-soft" id="themeBtnLogin">🌙 Theme</button>
+      </div>
+      <p class="note" style="margin-top:14px;">Default demo login: <strong>admin / 1234</strong></p>
+    </div>
+  </div>
+
+  <div class="app hidden" id="appShell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">CT</div>
+        <div>
+          <h1>Complaint Tracker</h1>
+          <small>Advanced HTML Edition</small>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-title">Workspace</p>
+        <button class="nav-btn active" data-section="dashboardSection">🏠 Dashboard</button>
+        <button class="nav-btn" data-section="complaintsSection">🎫 Complaints</button>
+        <button class="nav-btn" data-section="amcSection">📅 AMC</button>
+        <button class="nav-btn" data-section="reportsSection">📈 Reports</button>
+        <button class="nav-btn" data-section="masterSection">🗂 Master</button>
+        <button class="nav-btn" data-section="usersSection">👥 Users</button>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-title">Quick Actions</p>
+        <button class="nav-btn" id="navNewComplaint">➕ New Complaint</button>
+        <button class="nav-btn" id="navNewAMC">➕ New AMC</button>
+</div>
+
+      <div class="nav-section">
+        <p class="nav-title">Profile</p>
+        <div class="card panel" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08);color:#fff;box-shadow:none;">
+          <div style="font-size:12px;color:#bfdbfe;font-weight:700;">Logged in as</div>
+          <div id="sidebarUser" style="font-size:18px;font-weight:800;margin-top:4px;">Admin</div>
+          <div id="sidebarTime" class="note" style="color:#cbd5e1;margin-top:8px;">--</div>
+          <div class="actions-line" style="margin-top:14px;">
+            <button class="btn btn-soft" id="themeBtnSide">🌓</button>
+            <button class="btn btn-danger" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title-wrap">
+          <h2 id="sectionHeading">Advanced Service Dashboard</h2>
+          <p>Priority, SLA, follow-up, audit timeline, AMC renewals, filters and reports.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-primary" id="openComplaintBtn">+ New Complaint</button>
+          <button class="btn btn-success" id="openAMCBtn">+ New AMC</button>
+          <button class="btn btn-soft hidden" id="toggleFiltersBtn">⚙ Advanced Filters</button>
+          <button class="btn btn-soft" id="importExcelBtn">Import Data</button>
+          <button class="btn btn-dark" id="exportExcelBtn">Export Excel</button>
+          <button class="btn btn-dark" id="exportCsvBtn">Export CSV</button>
+          <button class="btn btn-soft" id="openMasterBtn">Master</button>
+          <button class="btn btn-soft" id="openUsersBtn">Users</button>
+          <button class="btn btn-soft" id="openEmailSettingsBtn">Email Settings</button>
+        </div>
+      </div>
+
+      <section id="dashboardSection" class="section active">
+        <div class="grid kpi-grid" id="kpiGrid"></div>
+
+        <div class="summary-layout">
+          <div class="card panel">
+            <div class="panel-title">
+              <div>
+                <h3>Operations Snapshot</h3>
+                <p>Real-time complaint, SLA and team performance summary.</p>
+              </div>
+            </div>
+            <div class="mini-grid" id="snapshotGrid"></div>
+          </div>
+
+          <div class="card panel">
+            <div class="panel-title">
+              <div>
+                <h3>Quick Alerts</h3>
+                <p>Urgent tickets and expiring AMC contracts.</p>
+              </div>
+            </div>
+            <div id="alertList" class="history-list"></div>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-title">
+            <div>
+              <h3>Top Priorities</h3>
+              <p>High-visibility open complaints needing immediate follow-up.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Client</th>
+                  <th>Issue</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>SLA</th>
+                  <th>Follow-up</th>
+                  <th>Assigned</th>
+                </tr>
+              </thead>
+              <tbody id="topPriorityBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="complaintsSection" class="section">
+        <div class="card panel">
+          <div class="panel-title">
+            <div>
+              <h3>Advanced Complaint Filters</h3>
+              <p>Search by ticket, date range, SLA, priority, engineer, client and more.</p>
+            </div>
+          </div>
+          <div class="search-row">
+            <div class="field">
+              <label>Global Search</label>
+              <input id="globalSearch" placeholder="Search ticket, client, issue, mobile, email, remarks..." />
+            </div>
+            <div class="field">
+              <label>Status</label>
+              <select id="filterStatus">
+                <option value="">All</option>
+                <option>Open</option>
+                <option>In Progress</option>
+                <option>Pending with Client</option>
+                <option>Closed</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Priority</label>
+              <select id="filterPriority">
+                <option value="">All</option>
+                <option>Critical</option>
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Assigned To</label>
+              <input id="filterAssigned" placeholder="Engineer / User" />
+            </div>
+            <div class="field">
+              <label>Client Name</label>
+              <input id="filterClient" placeholder="Client name" />
+            </div>
+            <button class="btn btn-soft" id="resetFiltersBtn">Reset</button>
+            <button class="btn btn-primary" id="applyQuickFilterBtn">Apply</button>
+          </div>
+
+          <div id="advancedFiltersPanel" class="filters-advanced hidden">
+            <div class="field">
+              <label>From Date</label>
+              <input type="date" id="filterFromDate" />
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input type="date" id="filterToDate" />
+            </div>
+            <div class="field">
+              <label>SLA Status</label>
+              <select id="filterSla">
+                <option value="">All</option>
+                <option value="On Time">On Time</option>
+                <option value="Near Due">Near Due</option>
+                <option value="Breached">Breached</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Issue Type</label>
+              <input id="filterIssueType" placeholder="Issue type" />
+            </div>
+            <div class="field">
+              <label>Only Follow-up Due</label>
+              <select id="filterFollowupDue">
+                <option value="">All</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Only Escalated</label>
+              <select id="filterEscalated">
+                <option value="">All</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chips">
+            <button class="chip" data-quick="today">Today</button>
+            <button class="chip" data-quick="week">This Week</button>
+            <button class="chip" data-quick="month">This Month</button>
+            <button class="chip" data-quick="open">Open Only</button>
+            <button class="chip" data-quick="critical">Critical</button>
+            <button class="chip" data-quick="breached">SLA Breached</button>
+            <button class="chip" data-quick="followup">Follow-up Due</button>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-title">
+            <div>
+              <h3>Complaint Register</h3>
+              <p>Enterprise-style table with priority badges, SLA status, follow-up and audit actions.</p>
+            </div>
+            <div class="note" id="tableCount">0 records</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Client</th>
+                  <th>Contact</th>
+                  <th>Issue</th>
+                  <th>Assigned</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>SLA</th>
+                  <th>Created</th>
+                  <th>Follow-up</th>
+                  <th>Escalation</th>
+                  <th>Remarks</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="complaintTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="amcSection" class="section">
+        <div class="card panel">
+          <div class="panel-title">
+            <div>
+              <h3>AMC Management</h3>
+              <p>Track active contracts, renewal amounts and expiry alerts.</p>
+            </div>
+            <button class="btn btn-success" id="amcNewTopBtn">+ Add AMC</button>
+          </div>
+          <div class="amc-grid">
+            <div class="field"><label>Search Client</label><input id="amcSearch" placeholder="Search AMC by client" /></div>
+            <div class="field"><label>Status</label><select id="amcStatusFilter"><option value="">All</option><option>Active</option><option>Expiring Soon</option><option>Expired</option></select></div>
+            <div class="field"><label>Type</label><select id="amcTypeFilter"><option value="">All</option><option>Software AMC</option><option>Hardware AMC</option><option>Full AMC</option></select></div>
+            <div class="field"><label>&nbsp;</label><button class="btn btn-soft" id="amcResetBtn">Reset AMC Filter</button></div>
+          </div>
+          <div class="amc-list" id="amcList"></div>
+        </div>
+      </section>
+
+      <section id="reportsSection" class="section">
+        <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="card panel"><div class="panel-title"><div><h3>Status Summary</h3><p>Open vs in-progress vs pending vs closed</p></div></div><div id="reportStatus"></div></div>
+          <div class="card panel"><div class="panel-title"><div><h3>Priority Summary</h3><p>Critical / high / medium / low</p></div></div><div id="reportPriority"></div></div>
+          <div class="card panel"><div class="panel-title"><div><h3>SLA Summary</h3><p>On-time, near-due and breached cases</p></div></div><div id="reportSla"></div></div>
+        </div>
+        <div class="card panel" style="margin-top:16px;">
+          <div class="panel-title">
+            <div>
+              <h3>Report Insights</h3>
+              <p>Quick management view for daily review meetings.</p>
+            </div>
+          </div>
+          <div id="reportInsights" class="history-list"></div>
+        </div>
+      </section>
+
+      <section id="masterSection" class="section">
+        <div class="grid" style="grid-template-columns:1.25fr .95fr;align-items:start;gap:18px;">
+          <div class="card panel">
+            <div class="panel-title">
+              <div>
+                <h3>Client Master</h3>
+                <p>Create and maintain client master records used for complaint auto-fill and imports.</p>
+              </div>
+              <div class="table-actions">
+                <button class="btn btn-soft" id="importClientMasterBtnInline">Import Client Master</button>
+                <button class="btn btn-primary" id="addClientMasterBtn">+ Add Client</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Client Name</th><th>Mobile</th><th>Email</th><th>Address</th><th>Action</th></tr>
+                </thead>
+                <tbody id="clientMasterBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card panel">
+            <div class="panel-title">
+              <div>
+                <h3>Suggestion Master</h3>
+                <p>Create issue type and assigned-to suggestion values.</p>
+              </div>
+              <button class="btn btn-primary" id="addSuggestionBtn">+ Add Suggestion</button>
+            </div>
+            <div id="suggestionMasterList" class="history-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="usersSection" class="section">
+        <div class="card panel">
+          <div class="panel-title">
+            <div>
+              <h3>User Management</h3>
+              <p>Create users and maintain role-based access for this HTML edition.</p>
+            </div>
+            <button class="btn btn-primary" id="addUserBtn">+ Add User</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Username</th><th>Password</th><th>Role</th><th>Created</th><th>Action</th></tr>
+              </thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="importChoiceModalBackdrop">
+    <div class="modal" style="max-width:620px;">
+      <div class="modal-header">
+        <div>
+          <h3>Import Data</h3>
+          <div class="note">Choose the correct import type before selecting an Excel file.</div>
+        </div>
+        <button class="btn btn-soft" id="closeImportChoiceModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:16px;">
+          <div class="card panel" style="margin:0;">
+            <h3 style="margin-bottom:8px;">Complaint Import</h3>
+            <p class="note">Use for ticket rows like Ticket No, Client Name, Issue Type, Status, Priority, SLA and remarks.</p>
+            <button class="btn btn-primary" id="chooseComplaintImportBtn" style="margin-top:12px;">Choose Complaint Excel</button>
+          </div>
+          <div class="card panel" style="margin:0;">
+            <h3 style="margin-bottom:8px;">Client Master Import</h3>
+            <p class="note">Use for client master rows like Client Name, Mobile, Email and Address.</p>
+            <button class="btn btn-success" id="chooseClientMasterImportBtn" style="margin-top:12px;">Choose Client Master Excel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="complaintModalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h3 id="complaintModalTitle">New Complaint</h3>
+          <div class="note">Add complaint, priority, SLA, follow-up and internal notes.</div>
+        </div>
+        <button class="btn btn-soft" id="closeComplaintModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Client Name</label>
+            <input id="fClientName" list="masterClientSuggestions" />
+          </div>
+          <div class="field">
+            <label>Mobile No.</label>
+            <input id="fMobileNo" />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input id="fEmail" type="email" />
+            <div class="note">Auto-picked from Client Master. Sender: <span id="senderHintName">Support Team</span> &lt;<span id="senderHintEmail">support@yourcompany.com</span>&gt;</div>
+          </div>
+          <div class="field">
+            <label>Address</label>
+            <input id="fAddress" />
+          </div>
+
+          <div class="field">
+            <label>Issue Type</label>
+            <input id="fIssueType" list="issueSuggestions" />
+          </div>
+          <div class="field span-2">
+            <label>Issue Details</label>
+            <textarea id="fIssueDetails"></textarea>
+          </div>
+          <div class="field">
+            <label>Assigned To</label>
+            <input id="fAssignedTo" list="assignSuggestions" />
+          </div>
+
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus"><option>Open</option><option>In Progress</option><option>Pending with Client</option><option>Closed</option></select>
+          </div>
+          <div class="field">
+            <label>Priority</label>
+            <select id="fPriority"><option>Medium</option><option>Critical</option><option>High</option><option>Low</option></select>
+          </div>
+          <div class="field">
+            <label>SLA Due Date & Time</label>
+            <input type="datetime-local" id="fSlaDue" />
+          </div>
+          <div class="field">
+            <label>Follow-up Date</label>
+            <input type="date" id="fFollowupDate" />
+          </div>
+
+          <div class="field">
+            <label>Escalation Level</label>
+            <select id="fEscalationLevel"><option value="">None</option><option>L1</option><option>L2</option><option>L3</option></select>
+          </div>
+          <div class="field">
+            <label>Escalated To</label>
+            <input id="fEscalatedTo" placeholder="Manager / Team Lead" />
+          </div>
+          <div class="field span-2">
+            <label>Escalation Remarks</label>
+            <input id="fEscalationRemarks" placeholder="Reason for escalation" />
+          </div>
+
+          <div class="field span-2">
+            <label>Customer Remarks</label>
+            <textarea id="fRemarks"></textarea>
+          </div>
+          <div class="field span-2">
+            <label>Internal Notes</label>
+            <textarea id="fInternalNotes"></textarea>
+          </div>
+        </div>
+        <datalist id="clientSuggestions"></datalist>
+        <datalist id="issueSuggestions"></datalist>
+        <datalist id="assignSuggestions"></datalist>
+        <datalist id="masterClientSuggestions"></datalist>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-soft" id="autoSlaBtn">Auto SLA by Priority</button>
+        <button class="btn btn-danger" id="cancelComplaintBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveComplaintBtn">Save Complaint</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="detailsModalBackdrop">
+    <div class="modal small">
+      <div class="modal-header">
+        <div>
+          <h3 id="detailsTitle">Ticket Details</h3>
+          <div class="note">Full complaint timeline, follow-up and internal notes.</div>
+        </div>
+        <button class="btn btn-soft" id="closeDetailsModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="detailsBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="amcModalBackdrop">
+    <div class="modal small">
+      <div class="modal-header">
+        <div>
+          <h3 id="amcModalTitle">New AMC</h3>
+          <div class="note">Create or renew AMC contract.</div>
+        </div>
+        <button class="btn btn-soft" id="closeAmcModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="amc-grid">
+          <div class="field"><label>Client Name</label><input id="aClientName" list="clientSuggestions" /></div>
+          <div class="field"><label>AMC Type</label><select id="aType"><option>Software AMC</option><option>Hardware AMC</option><option>Full AMC</option></select></div>
+          <div class="field"><label>Start Date</label><input type="date" id="aStart" /></div>
+          <div class="field"><label>End Date</label><input type="date" id="aEnd" /></div>
+          <div class="field"><label>Amount</label><input id="aAmount" type="number" min="0" /></div>
+          <div class="field"><label>Renewal Amount</label><input id="aRenewalAmount" type="number" min="0" /></div>
+          <div class="field"><label>Assigned Owner</label><input id="aAssigned" /></div>
+          <div class="field"><label>Contract Note</label><input id="aNote" /></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="cancelAmcBtn">Cancel</button>
+        <button class="btn btn-success" id="saveAmcBtn">Save AMC</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="clientMasterModalBackdrop" class="modal-backdrop">
+    <div class="modal small">
+      <div class="modal-header"><h3 id="clientMasterModalTitle">Add Client Master</h3><button class="btn btn-soft" id="closeClientMasterModal">✕</button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field span-2"><label>Client Name</label><input id="mClientName" /></div>
+          <div class="field"><label>Mobile</label><input id="mClientMobile" /></div>
+          <div class="field"><label>Email</label><input id="mClientEmail" type="email" /></div>
+          <div class="field span-4"><label>Address</label><input id="mClientAddress" /></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-soft" id="cancelClientMasterBtn">Cancel</button><button class="btn btn-primary" id="saveClientMasterBtn">Save Client</button></div>
+    </div>
+  </div>
+
+  <div id="suggestionModalBackdrop" class="modal-backdrop">
+    <div class="modal small">
+      <div class="modal-header"><h3 id="suggestionModalTitle">Add Suggestion</h3><button class="btn btn-soft" id="closeSuggestionModal">✕</button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Type</label><select id="sType"><option>Issue Type</option><option>Assigned To</option></select></div>
+          <div class="field span-2"><label>Value</label><input id="sValue" /></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-soft" id="cancelSuggestionBtn">Cancel</button><button class="btn btn-primary" id="saveSuggestionBtn">Save Suggestion</button></div>
+    </div>
+  </div>
+
+  <div id="userModalBackdrop" class="modal-backdrop">
+    <div class="modal small">
+      <div class="modal-header"><h3 id="userModalTitle">Add User</h3><button class="btn btn-soft" id="closeUserModal">✕</button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Username</label><input id="uUsername" /></div>
+          <div class="field"><label>Password</label><input id="uPassword" /></div>
+          <div class="field"><label>Role</label><select id="uRole"><option>Admin</option><option>Manager</option><option>Engineer</option><option>Viewer</option></select></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-soft" id="cancelUserBtn">Cancel</button><button class="btn btn-primary" id="saveUserBtn">Save User</button></div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script>
+    const STORAGE_KEYS = {
+      complaints: 'cta_advanced_complaints',
+      amcs: 'cta_advanced_amcs',
+      users: 'cta_advanced_users',
+      clientMaster: 'cta_advanced_client_master',
+      suggestionMaster: 'cta_advanced_suggestion_master',
+      currentUser: 'cta_advanced_current_user',
+      sentEmails: 'cta_advanced_sent_emails',
+      theme: 'cta_advanced_theme'
+    };
+
+    let complaints = [];
+    let amcs = [];
+    let users = [];
+    let clientMaster = [];
+    let suggestionMaster = [];
+    let sentEmails = [];
+    let currentUser = null;
+    let complaintEditId = null;
+    let amcEditId = null;
+    let userEditId = null;
+    let clientMasterEditId = null;
+    let activeQuickChip = null;
+
+    const fieldMap = {
+      clientName: 'fClientName', mobileNo: 'fMobileNo', email: 'fEmail', address: 'fAddress', issueType: 'fIssueType', issueDetails: 'fIssueDetails', assignedTo: 'fAssignedTo',
+      status: 'fStatus', priority: 'fPriority', slaDue: 'fSlaDue', followupDate: 'fFollowupDate', escalationLevel: 'fEscalationLevel', escalatedTo: 'fEscalatedTo', escalationRemarks: 'fEscalationRemarks', remarks: 'fRemarks', internalNotes: 'fInternalNotes'
+    };
+
+    function nowIso(){ return new Date().toISOString(); }
+    function today(){ return new Date().toISOString().slice(0,10); }
+    function escapeHtml(str=''){ return String(str).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+    function fmtDate(value){ if(!value) return '-'; const d = new Date(value); if(Number.isNaN(d.getTime())) return value; return d.toLocaleDateString('en-GB'); }
+    function fmtDateTime(value){ if(!value) return '-'; const d = new Date(value); if(Number.isNaN(d.getTime())) return value; return d.toLocaleString('en-GB'); }
+    function toInputDateTime(value){ if(!value) return ''; const d = new Date(value); if(Number.isNaN(d.getTime())) return ''; const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+    function genId(prefix='id'){ return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
+    function genTicket(){ const year = new Date().getFullYear(); const count = complaints.length + 1; return `CT-${year}-${String(count).padStart(4,'0')}`; }
+    function toast(msg){ const wrap=document.getElementById('toastWrap'); const el=document.createElement('div'); el.className='toast'; el.textContent=msg; wrap.appendChild(el); setTimeout(()=>el.remove(),2600); }
+
+    
+function saveLocal(){
+  if(currentUser) localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify(currentUser));
+  else localStorage.removeItem(STORAGE_KEYS.currentUser);
+}
+
+    
+async function api(path, options={}){
+  const headers = {
+    'Content-Type':'application/json',
+    ...(currentUser ? {'x-role': String(currentUser.role || '').toLowerCase()} : {}),
+    ...(options.headers || {})
+  };
+  const res = await fetch(path, {...options, headers});
+  const text = await res.text();
+  let data = {};
+  try{ data = text ? JSON.parse(text) : {}; }catch{ data = { raw:text }; }
+  if(!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+  return data;
+}
+
+function normalizeComplaintRow(r){
+  return {
+    id: String(r.id), ticket: r.ticketNo || r.ticket || '', clientName: r.clientName || '', mobileNo: r.mobile || r.mobileNo || '', email: r.email || '', address: r.address || '', issueType: r.issueType || '', issueDetails: r.issueDetails || '', assignedTo: r.assignedTo || '', status: r.status || 'Open', priority: r.priority || 'Medium', slaDue: r.slaDue || '', followupDate: r.followupDate || '', escalationLevel: r.escalationLevel || '', escalatedTo: r.escalatedTo || '', escalationRemarks: r.escalationRemarks || '', remarks: r.remarks || '', internalNotes: r.internalNotes || '', createdAt: r.created_at || r.createdAt || r.created || '', closedAt: r.closed_at || r.closedAt || r.closed || '', history: Array.isArray(r.history) ? r.history : [] };
+}
+function normalizeAmcRow(r){ return { id:String(r.id), clientName:r.clientName||'', type:r.type||'', start:r.start||'', end:r.end||'', amount:r.amount||'', renewalAmount:r.renewalAmount||'', assigned:r.assigned||'', note:r.note||'', createdAt:r.created_at||r.createdAt||'' }; }
+function normalizeUserRow(r){ return { id:String(r.id), username:r.username||'', password:r.password||'', role:r.role||'Viewer', createdAt:r.created_at||r.createdAt||'' }; }
+
+    
+async function loadData(){
+  currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.currentUser) || 'null');
+  try{
+    const [complaintRows, amcRows, userRows, clientRows, suggestionRows] = await Promise.all([
+      api('/complaints'), api('/amc'), api('/users'), api('/client-master'), api('/suggestion-master')
+    ]);
+    complaints = Array.isArray(complaintRows) ? complaintRows.map(normalizeComplaintRow) : [];
+    amcs = Array.isArray(amcRows) ? amcRows.map(normalizeAmcRow) : [];
+    users = Array.isArray(userRows) ? userRows.map(normalizeUserRow) : [];
+    clientMaster = Array.isArray(clientRows) ? clientRows.map(r => ({ id:String(r.id), name:r.name||'', mobile:r.mobile||'', email:r.email||'', address:r.address||'', createdAt:r.created_at||'' })) : [];
+    suggestionMaster = Array.isArray(suggestionRows) ? suggestionRows.map(r => ({ id:String(r.id), type:r.type||'', value:r.value||'', createdAt:r.created_at||'' })) : [];
+  }catch(err){
+    console.error(err); toast(`Server sync failed: ${err.message}`);
+    complaints=[]; amcs=[]; users=[]; clientMaster=[]; suggestionMaster=[];
+  }
+  sentEmails=[]; applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || 'light');
+}
+
+    function applyTheme(theme){
+      document.body.classList.toggle('dark', theme === 'dark');
+      localStorage.setItem(STORAGE_KEYS.theme, theme);
+    }
+    function toggleTheme(){ applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark'); }
+
+    function updateSidebarClock(){
+      const el = document.getElementById('sidebarTime');
+      if(el) el.textContent = new Date().toLocaleString('en-GB');
+    }
+
+    function getSlaStatus(item){
+      if(item.status === 'Closed') return 'N/A';
+      if(!item.slaDue) return 'N/A';
+      const due = new Date(item.slaDue).getTime();
+      const now = Date.now();
+      if(Number.isNaN(due)) return 'N/A';
+      if(now > due) return 'Breached';
+      const diffHrs = (due - now) / 36e5;
+      if(diffHrs <= 8) return 'Near Due';
+      return 'On Time';
+    }
+
+    function getSlaBadge(status){
+      if(status === 'Breached') return `<span class="badge sla-breach">Breached</span>`;
+      if(status === 'Near Due') return `<span class="badge sla-near">Near Due</span>`;
+      if(status === 'On Time') return `<span class="badge sla-ok">On Time</span>`;
+      return `<span class="badge sla-na">N/A</span>`;
+    }
+
+    function getStatusBadge(status){
+      if(status === 'Open') return `<span class="badge status-open">Open</span>`;
+      if(status === 'In Progress') return `<span class="badge status-progress">In Progress</span>`;
+      if(status === 'Pending with Client') return `<span class="badge status-pending">Pending with Client</span>`;
+      return `<span class="badge status-closed">Closed</span>`;
+    }
+
+    function getPriorityBadge(priority){
+      const cls = `priority-${String(priority||'').toLowerCase()}`;
+      return `<span class="badge ${cls}">${escapeHtml(priority || 'Medium')}</span>`;
+    }
+
+    function isFollowupDue(item){
+      if(!item.followupDate || item.status === 'Closed') return false;
+      return item.followupDate <= today();
+    }
+
+    function getComplaintFilters(){
+      return {
+        search: document.getElementById('globalSearch').value.trim().toLowerCase(),
+        status: document.getElementById('filterStatus').value,
+        priority: document.getElementById('filterPriority').value,
+        assigned: document.getElementById('filterAssigned').value.trim().toLowerCase(),
+        client: document.getElementById('filterClient').value.trim().toLowerCase(),
+        fromDate: document.getElementById('filterFromDate').value,
+        toDate: document.getElementById('filterToDate').value,
+        sla: document.getElementById('filterSla').value,
+        issueType: document.getElementById('filterIssueType').value.trim().toLowerCase(),
+        followupDue: document.getElementById('filterFollowupDue').value,
+        escalated: document.getElementById('filterEscalated').value
+      };
+    }
+
+    function filterComplaints(){
+      const f = getComplaintFilters();
+      return complaints.filter(item => {
+        const haystack = [item.ticket,item.clientName,item.mobileNo,item.email,item.issueType,item.issueDetails,item.remarks,item.internalNotes,item.assignedTo].join(' ').toLowerCase();
+        const created = (item.createdAt || '').slice(0,10);
+        const slaStatus = getSlaStatus(item);
+        const escalated = Boolean(item.escalationLevel || item.escalatedTo || item.escalationRemarks);
+        if(f.search && !haystack.includes(f.search)) return false;
+        if(f.status && item.status !== f.status) return false;
+        if(f.priority && item.priority !== f.priority) return false;
+        if(f.assigned && !(item.assignedTo||'').toLowerCase().includes(f.assigned)) return false;
+        if(f.client && !(item.clientName||'').toLowerCase().includes(f.client)) return false;
+        if(f.fromDate && created < f.fromDate) return false;
+        if(f.toDate && created > f.toDate) return false;
+        if(f.sla && slaStatus !== f.sla) return false;
+        if(f.issueType && !(item.issueType||'').toLowerCase().includes(f.issueType)) return false;
+        if(f.followupDue === 'yes' && !isFollowupDue(item)) return false;
+        if(f.escalated === 'yes' && !escalated) return false;
+        return true;
+      }).sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    function renderComplaints(){
+      const tbody = document.getElementById('complaintTableBody');
+      const rows = filterComplaints();
+      document.getElementById('tableCount').textContent = `${rows.length} records`;
+      if(!rows.length){ tbody.innerHTML = `<tr><td colspan="13" class="empty-state">No complaints found for selected filters.</td></tr>`; return; }
+      tbody.innerHTML = rows.map(item => {
+        const sla = getSlaStatus(item);
+        const followup = isFollowupDue(item) ? `<span class="badge sla-breach">Due ${fmtDate(item.followupDate)}</span>` : (item.followupDate ? `<span class="badge sla-ok">${fmtDate(item.followupDate)}</span>` : '-');
+        const escal = item.escalationLevel ? `${escapeHtml(item.escalationLevel)}${item.escalatedTo ? ` → ${escapeHtml(item.escalatedTo)}`:''}` : '-';
+        const rowClasses = [item.priority === 'Critical' ? 'row-critical' : '', sla === 'Breached' ? 'row-overdue' : ''].join(' ');
+        return `
+          <tr class="${rowClasses}">
+            <td><strong>${escapeHtml(item.ticket)}</strong></td>
+            <td>${escapeHtml(item.clientName)}</td>
+            <td>${escapeHtml(item.mobileNo || '-')}<br><span class="note">${escapeHtml(item.email || '-')}</span></td>
+            <td><strong>${escapeHtml(item.issueType)}</strong><br><span class="note">${escapeHtml(item.issueDetails || '')}</span></td>
+            <td>${escapeHtml(item.assignedTo || '-')}</td>
+            <td><select class="status-select" onchange="changeComplaintStatus('${item.id}', this.value)"><option value="Open" ${item.status === 'Open' ? 'selected' : ''}>Open</option><option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Pending with Client" ${item.status === 'Pending with Client' ? 'selected' : ''}>Pending with Client</option><option value="Closed" ${item.status === 'Closed' ? 'selected' : ''}>Closed</option></select></td>
+            <td>${getPriorityBadge(item.priority)}</td>
+            <td>${getSlaBadge(sla)}<br><span class="note">${item.slaDue ? fmtDateTime(item.slaDue) : '-'}</span></td>
+            <td>${fmtDateTime(item.createdAt)}<br>${item.closedAt ? `<span class="note">Closed: ${fmtDate(item.closedAt)}</span>` : ''}</td>
+            <td>${followup}</td>
+            <td>${escapeHtml(escal)}</td>
+            <td>${escapeHtml(item.remarks || '-')}<br><span class="note">Internal: ${escapeHtml(item.internalNotes || '-')}</span></td>
+            <td>
+              <div class="table-actions">
+                <button class="tiny-btn tiny-view" onclick="viewComplaint('${item.id}')">View</button>
+                <button class="tiny-btn tiny-edit" onclick="editComplaint('${item.id}')">Edit</button>
+                <button class="tiny-btn tiny-view" onclick="manualSendComplaintEmail('${item.id}')">Send Email</button>
+                                <button class="tiny-btn tiny-delete" onclick="deleteComplaint('${item.id}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function getMetrics(){
+      const total = complaints.length;
+      const open = complaints.filter(x=>x.status==='Open').length;
+      const progress = complaints.filter(x=>x.status==='In Progress').length;
+      const pending = complaints.filter(x=>x.status==='Pending with Client').length;
+      const closed = complaints.filter(x=>x.status==='Closed').length;
+      const breached = complaints.filter(x=>getSlaStatus(x)==='Breached').length;
+      const nearDue = complaints.filter(x=>getSlaStatus(x)==='Near Due').length;
+      const critical = complaints.filter(x=>x.priority==='Critical' && x.status!=='Closed').length;
+      const todayCreated = complaints.filter(x=>(x.createdAt||'').slice(0,10)===today()).length;
+      const todayClosed = complaints.filter(x=>(x.closedAt||'').slice(0,10)===today()).length;
+      const followupDue = complaints.filter(isFollowupDue).length;
+      const amcExpiring = amcs.filter(a=>getAmcStatus(a)==='Expiring Soon').length;
+      const amcExpired = amcs.filter(a=>getAmcStatus(a)==='Expired').length;
+      return {total, open, progress, pending, closed, breached, nearDue, critical, todayCreated, todayClosed, followupDue, amcExpiring, amcExpired};
+    }
+
+    function renderDashboard(){
+      const m = getMetrics();
+      const kpis = [
+        ['Total Complaints', m.total, 'All registered tickets'],
+        ['Open', m.open, 'Fresh tickets'],
+        ['In Progress', m.progress, 'Currently being handled'],
+        ['Pending', m.pending, 'Waiting from client/user'],
+        ['Closed', m.closed, 'Resolved tickets'],
+        ['SLA Breached', m.breached, 'Need escalation'],
+        ['Near Due SLA', m.nearDue, 'Due within 8 hrs'],
+        ['Critical Open', m.critical, 'Highest urgency'],
+        ['Today Created', m.todayCreated, 'New complaints today'],
+        ['Today Closed', m.todayClosed, 'Resolved today'],
+        ['Follow-up Due', m.followupDue, 'Review immediately'],
+        ['AMC Expiring', m.amcExpiring, 'Expiring within 30 days']
+      ];
+      document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+        <div class="card kpi-card">
+          <h3>${k[0]}</h3>
+          <div class="kpi-value">${k[1]}</div>
+          <div class="kpi-sub">${k[2]}</div>
+        </div>
+      `).join('');
+
+      const snapshot = [
+        ['SLA Compliance %', m.total ? Math.round(((m.total - m.breached)/m.total)*100) : 100],
+        ['AMC Expired', m.amcExpired],
+        ['Escalated Tickets', complaints.filter(x=>x.escalationLevel).length],
+        ['High + Critical', complaints.filter(x=>['High','Critical'].includes(x.priority) && x.status !== 'Closed').length]
+      ];
+      document.getElementById('snapshotGrid').innerHTML = snapshot.map(s=>`<div class="mini-stat"><h4>${s[0]}</h4><div>${s[1]}</div></div>`).join('');
+
+      const alerts = [];
+      complaints.filter(x=>getSlaStatus(x)==='Breached').slice(0,3).forEach(x=>alerts.push(`<div class="history-item"><strong>${escapeHtml(x.ticket)} · ${escapeHtml(x.clientName)}</strong><div>SLA breached for <strong>${escapeHtml(x.issueType)}</strong></div><div class="history-time">Assigned: ${escapeHtml(x.assignedTo || '-')}</div></div>`));
+      amcs.filter(a=>['Expiring Soon','Expired'].includes(getAmcStatus(a))).slice(0,3).forEach(a=>alerts.push(`<div class="history-item"><strong>${escapeHtml(a.clientName)}</strong><div>AMC ${getAmcStatus(a)} · ${escapeHtml(a.type)}</div><div class="history-time">End Date: ${fmtDate(a.end)}</div></div>`));
+      document.getElementById('alertList').innerHTML = alerts.length ? alerts.join('') : `<div class="empty-state">No urgent alerts right now.</div>`;
+
+      const topRows = complaints.filter(x=>x.status!=='Closed').sort((a,b)=>{
+        const p = {Critical:4, High:3, Medium:2, Low:1};
+        return (p[b.priority]||0) - (p[a.priority]||0) || new Date(a.slaDue||'9999-12-31') - new Date(b.slaDue||'9999-12-31');
+      }).slice(0,6);
+      document.getElementById('topPriorityBody').innerHTML = topRows.length ? topRows.map(x=>`<tr><td>${escapeHtml(x.ticket)}</td><td>${escapeHtml(x.clientName)}</td><td>${escapeHtml(x.issueType)}</td><td>${getPriorityBadge(x.priority)}</td><td>${getStatusBadge(x.status)}</td><td>${getSlaBadge(getSlaStatus(x))}</td><td>${x.followupDate ? fmtDate(x.followupDate) : '-'}</td><td>${escapeHtml(x.assignedTo || '-')}</td></tr>`).join('') : `<tr><td colspan="8" class="empty-state">No open tickets.</td></tr>`;
+    }
+
+    function getAmcStatus(item){
+      const end = new Date(item.end).getTime();
+      const now = new Date(today()).getTime();
+      if(Number.isNaN(end)) return 'Active';
+      if(end < now) return 'Expired';
+      const diffDays = (end - now)/86400000;
+      if(diffDays <= 30) return 'Expiring Soon';
+      return 'Active';
+    }
+
+    function renderAmc(){
+      const search = document.getElementById('amcSearch').value.trim().toLowerCase();
+      const status = document.getElementById('amcStatusFilter').value;
+      const type = document.getElementById('amcTypeFilter').value;
+      const rows = amcs.filter(a => {
+        if(search && !(a.clientName||'').toLowerCase().includes(search)) return false;
+        if(status && getAmcStatus(a) !== status) return false;
+        if(type && a.type !== type) return false;
+        return true;
+      }).sort((a,b)=> new Date(a.end) - new Date(b.end));
+      const list = document.getElementById('amcList');
+      if(!rows.length){ list.innerHTML = `<div class="empty-state">No AMC records found.</div>`; return; }
+      list.innerHTML = rows.map(a=>{
+        const s = getAmcStatus(a);
+        const badge = s==='Active' ? `<span class="badge sla-ok">Active</span>` : s==='Expiring Soon' ? `<span class="badge sla-near">Expiring Soon</span>` : `<span class="badge sla-breach">Expired</span>`;
+        return `
+          <div class="amc-item">
+            <div>
+              <strong style="font-size:16px;">${escapeHtml(a.clientName)}</strong>
+              <div class="note" style="margin-top:6px;">${escapeHtml(a.type)} · Owner: ${escapeHtml(a.assigned || '-')}</div>
+              <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">${badge}<span class="badge status-open">Start ${fmtDate(a.start)}</span><span class="badge status-closed">End ${fmtDate(a.end)}</span></div>
+              <div style="margin-top:10px;">Amount: <strong>₹${Number(a.amount||0).toLocaleString('en-IN')}</strong> · Renewal: <strong>₹${Number(a.renewalAmount||0).toLocaleString('en-IN')}</strong></div>
+              <div class="note" style="margin-top:8px;">${escapeHtml(a.note || '-')}</div>
+            </div>
+            <div class="table-actions">
+              <button class="tiny-btn tiny-edit" onclick="editAmc('${a.id}')">Edit</button>
+              <button class="tiny-btn tiny-view" onclick="renewAmc('${a.id}')">Renew</button>
+              <button class="tiny-btn tiny-delete" onclick="deleteAmc('${a.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function countBy(arr, keyGetter){
+      return arr.reduce((acc,item)=>{ const k = keyGetter(item); acc[k]=(acc[k]||0)+1; return acc; },{});
+    }
+    function renderReportBox(targetId, dataObj){
+      const entries = Object.entries(dataObj);
+      const total = entries.reduce((s,[,v])=>s+v,0) || 1;
+      document.getElementById(targetId).innerHTML = entries.map(([k,v])=>`<div class="history-item"><strong>${escapeHtml(k)}</strong><div>${v} ticket(s)</div><div class="history-time">${Math.round((v/total)*100)}% of total</div></div>`).join('') || '<div class="empty-state">No data</div>';
+    }
+
+    function renderReports(){
+      renderReportBox('reportStatus', countBy(complaints, x=>x.status));
+      renderReportBox('reportPriority', countBy(complaints, x=>x.priority));
+      renderReportBox('reportSla', countBy(complaints, x=>getSlaStatus(x)));
+      const insights = [];
+      const m = getMetrics();
+      if(m.breached) insights.push(`There are ${m.breached} SLA breached complaint(s). Immediate escalation review is recommended.`);
+      if(m.followupDue) insights.push(`${m.followupDue} ticket(s) require follow-up today.`);
+      if(m.amcExpiring) insights.push(`${m.amcExpiring} AMC contract(s) are expiring within 30 days.`);
+      const topEngineer = Object.entries(countBy(complaints.filter(x=>x.status!=='Closed'), x=>x.assignedTo || 'Unassigned')).sort((a,b)=>b[1]-a[1])[0];
+      if(topEngineer) insights.push(`${topEngineer[0]} is currently handling the highest number of active tickets (${topEngineer[1]}).`);
+      document.getElementById('reportInsights').innerHTML = insights.length ? insights.map(x=>`<div class="history-item">${escapeHtml(x)}</div>`).join('') : `<div class="empty-state">No management insights available.</div>`;
+    }
+
+    function renderDatalists(){
+      const clientOptions = [...new Set([...clientMaster.map(x=>x.name), ...complaints.map(x=>x.clientName), ...amcs.map(a=>a.clientName)].filter(Boolean))];
+      const issueOptions = [...new Set([...suggestionMaster.filter(x=>x.type==='Issue Type').map(x=>x.value), ...complaints.map(x=>x.issueType)].filter(Boolean))];
+      const assignOptions = [...new Set([...suggestionMaster.filter(x=>x.type==='Assigned To').map(x=>x.value), ...complaints.map(x=>x.assignedTo), ...amcs.map(x=>x.assigned)].filter(Boolean))];
+      document.getElementById('clientSuggestions').innerHTML = clientOptions.map(x=>`<option value="${escapeHtml(x)}"></option>`).join('');
+      document.getElementById('issueSuggestions').innerHTML = issueOptions.map(x=>`<option value="${escapeHtml(x)}"></option>`).join('');
+      document.getElementById('assignSuggestions').innerHTML = assignOptions.map(x=>`<option value="${escapeHtml(x)}"></option>`).join('');
+      document.getElementById('masterClientSuggestions').innerHTML = clientOptions.map(x=>`<option value="${escapeHtml(x)}"></option>`).join('');
+    }
+
+    function renderAll(){
+      renderDatalists();
+      renderDashboard();
+      renderComplaints();
+      renderAmc();
+      renderReports();
+      renderMasterSection();
+      renderUsersSection();
+      updateSidebar();
+    }
+
+    function updateSidebar(){
+      document.getElementById('sidebarUser').textContent = currentUser ? `${currentUser.username} (${currentUser.role})` : 'Guest';
+    }
+
+    function renderMasterSection(){
+      const cbody = document.getElementById('clientMasterBody');
+      cbody.innerHTML = clientMaster.length ? clientMaster.map(c=>`<tr><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.mobile||'')}</td><td>${escapeHtml(c.email||'')}</td><td>${escapeHtml(c.address||'')}</td><td><div class="table-actions"><button class="tiny-btn tiny-edit" onclick="editClientMaster('${c.id}')">Edit</button><button class="tiny-btn tiny-delete" onclick="deleteClientMaster('${c.id}')">Delete</button></div></td></tr>`).join('') : '<tr><td colspan="5" class="empty-state">No client master records</td></tr>';
+      const sug = document.getElementById('suggestionMasterList');
+      sug.innerHTML = suggestionMaster.length ? suggestionMaster.map(s=>`<div class="history-item"><strong>${escapeHtml(s.value)}</strong><div class="history-time">${escapeHtml(s.type)}</div><div class="table-actions" style="margin-top:8px;"><button class="tiny-btn tiny-edit" onclick="editSuggestion('${s.id}')">Edit</button><button class="tiny-btn tiny-delete" onclick="deleteSuggestion('${s.id}')">Delete</button></div></div>`).join('') : '<div class="empty-state">No suggestions added</div>';
+    }
+
+    
+function renderUsersSection(){
+  const body = document.getElementById('usersBody');
+  body.innerHTML = users.length ? users.map(u=>`<tr><td>${escapeHtml(u.username)}</td><td>${u.password ? '••••••' : '-'}</td><td>${escapeHtml(u.role)}</td><td>${fmtDateTime(u.createdAt)}</td><td><div class="table-actions">${u.username!=='admin' ? `<button class="tiny-btn tiny-edit" onclick="editUser('${u.id}')">Edit</button><button class="tiny-btn tiny-delete" onclick="deleteUser('${u.id}')">Delete</button>` : '<span class="badge sla-ok">Protected</span>'}</div></td></tr>`).join('') : '<tr><td colspan="5" class="empty-state">No users found</td></tr>';
+}
+
+    function openImportChoiceModal(){ document.getElementById('importChoiceModalBackdrop').classList.add('show'); }
+    function closeImportChoiceModal(){ document.getElementById('importChoiceModalBackdrop').classList.remove('show'); }
+    function openClientMasterModal(){ document.getElementById('clientMasterModalBackdrop').classList.add('show'); }
+    function closeClientMasterModal(){ document.getElementById('clientMasterModalBackdrop').classList.remove('show'); }
+    function openSuggestionModal(){ document.getElementById('suggestionModalBackdrop').classList.add('show'); }
+    function closeSuggestionModal(){ document.getElementById('suggestionModalBackdrop').classList.remove('show'); }
+    function openUserModal(){ document.getElementById('userModalBackdrop').classList.add('show'); }
+    function closeUserModal(){ document.getElementById('userModalBackdrop').classList.remove('show'); }
+
+    function resetClientMasterForm(){ clientMasterEditId = null; document.getElementById('clientMasterModalTitle').textContent='Add Client Master'; ['mClientName','mClientMobile','mClientEmail','mClientAddress'].forEach(id=>document.getElementById(id).value=''); }
+    function resetSuggestionForm(){ document.getElementById('suggestionModalTitle').textContent='Add Suggestion'; document.getElementById('sType').value='Issue Type'; document.getElementById('sValue').value=''; document.getElementById('sValue').dataset.editId=''; }
+    function resetUserForm(){ userEditId = null; document.getElementById('userModalTitle').textContent='Add User'; document.getElementById('uUsername').value=''; document.getElementById('uPassword').value=''; document.getElementById('uRole').value='Engineer'; }
+
+    
+async function saveClientMaster(){ const data={name:document.getElementById('mClientName').value.trim(), mobile:document.getElementById('mClientMobile').value.trim(), email:document.getElementById('mClientEmail').value.trim(), address:document.getElementById('mClientAddress').value.trim()}; if(!data.name){ alert('Client name required'); return; } try{ if(clientMasterEditId) await api(`/client-master/${clientMasterEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/client-master', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeClientMasterModal(); resetClientMasterForm(); toast('Client master saved'); }catch(err){ alert(err.message || 'Client save failed'); } }
+    
+async function saveSuggestion(){ const editId=document.getElementById('sValue').dataset.editId || ''; const item={type:document.getElementById('sType').value, value:document.getElementById('sValue').value.trim()}; if(!item.value){ alert('Value required'); return; } try{ if(editId) await api(`/suggestion-master/${editId}`, { method:'PUT', body: JSON.stringify(item) }); else await api('/suggestion-master', { method:'POST', body: JSON.stringify(item) }); await loadData(); renderAll(); closeSuggestionModal(); resetSuggestionForm(); toast('Suggestion saved'); }catch(err){ alert(err.message || 'Suggestion save failed'); } }
+    
+async function saveUser(){ const data={username:document.getElementById('uUsername').value.trim(), password:document.getElementById('uPassword').value.trim(), role:document.getElementById('uRole').value}; if(!data.username || !data.password){ alert('Username and password required'); return; } try{ if(userEditId) await api(`/users/${userEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/users', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeUserModal(); resetUserForm(); toast('User saved'); }catch(err){ alert(err.message || 'User save failed'); } }
+
+    window.editClientMaster = function(id){ const c = clientMaster.find(x=>x.id===id); if(!c) return; clientMasterEditId=id; document.getElementById('clientMasterModalTitle').textContent='Edit Client Master'; document.getElementById('mClientName').value=c.name||''; document.getElementById('mClientMobile').value=c.mobile||''; document.getElementById('mClientEmail').value=c.email||''; document.getElementById('mClientAddress').value=c.address||''; openClientMasterModal(); }
+    window.deleteClientMaster = async function(id){ const c = clientMaster.find(x=>x.id===id); if(!c) return; if(!confirm(`Delete client master for ${c.name}?`)) return; try{ await api(`/client-master/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Client master deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.editSuggestion = function(id){ const s = suggestionMaster.find(x=>x.id===id); if(!s) return; document.getElementById('suggestionModalTitle').textContent='Edit Suggestion'; document.getElementById('sType').value=s.type; document.getElementById('sValue').value=s.value; document.getElementById('sValue').dataset.editId=s.id; openSuggestionModal(); }
+    window.deleteSuggestion = async function(id){ const s=suggestionMaster.find(x=>x.id===id); if(!s) return; if(!confirm(`Delete suggestion ${s.value}?`)) return; try{ await api(`/suggestion-master/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Suggestion deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+    window.editUser = function(id){ const u = users.find(x=>x.id===id); if(!u) return; userEditId=id; document.getElementById('userModalTitle').textContent='Edit User'; document.getElementById('uUsername').value=u.username; document.getElementById('uPassword').value=u.password; document.getElementById('uRole').value=u.role; openUserModal(); }
+    window.deleteUser = async function(id){ const u=users.find(x=>x.id===id); if(!u) return; if(u.username==='admin'){ alert('Default admin is protected'); return; } if(!confirm(`Delete user ${u.username}?`)) return; try{ await api(`/users/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('User deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+
+    function fillComplaintFromClientMaster(name){ const c = clientMaster.find(x=>x.name.toLowerCase()===String(name||'').trim().toLowerCase()); if(!c) return; if(!document.getElementById('fMobileNo').value) document.getElementById('fMobileNo').value=c.mobile||''; if(!document.getElementById('fEmail').value) document.getElementById('fEmail').value=c.email||''; if(!document.getElementById('fAddress').value) document.getElementById('fAddress').value=c.address||''; }
+
+    function normalizeImportedComplaint(row){
+      const get = (...keys) => { for(const k of keys){ if(row[k]!==undefined && row[k]!==null && String(row[k]).trim()!=='') return String(row[k]).trim(); } return ''; };
+      const clientName = get('Client Name','clientName','Client','client'); if(!clientName) return null;
+      const status = get('Status','status') || 'Open'; const priority = get('Priority','priority') || 'Medium';
+      const createdRaw = get('Created','createdAt','created','Created At'); let createdAt = nowIso(); if(createdRaw){ const d=new Date(createdRaw); if(!Number.isNaN(d.getTime())) createdAt=d.toISOString(); }
+      const closedRaw = get('Closed','closedAt','closed','Closed At'); let closedAt=''; if(closedRaw){ const d=new Date(closedRaw); if(!Number.isNaN(d.getTime())) closedAt=d.toISOString(); }
+      const slaRaw = get('SLA Due','slaDue'); let slaDue=''; if(slaRaw){ const d=new Date(slaRaw); if(!Number.isNaN(d.getTime())) slaDue=d.toISOString(); }
+      const issueType = get('Issue Type','issueType'); const assignedTo = get('Assigned To','assignedTo');
+      const item = { id:genId('cmp'), ticket:get('Ticket','ticket') || genTicket(), clientName, mobileNo:get('Mobile','Mobile No','mobileNo','mobile'), email:get('Email','email'), address:get('Address','address'), issueType, issueDetails:get('Issue Details','issueDetails','details','Description'), assignedTo, status, priority, slaDue, createdAt, closedAt, followupDate:get('Follow-up','followupDate'), escalationLevel:get('Escalation Level','escalationLevel'), escalatedTo:get('Escalated To','escalatedTo'), escalationRemarks:get('Escalation Remarks','escalationRemarks'), remarks:get('Remarks','remarks'), internalNotes:get('Internal Notes','internalNotes'), history:[buildHistoryEntry('Imported from Excel','Bulk import')] };
+      if(issueType && !suggestionMaster.some(x=>x.type==='Issue Type' && x.value.toLowerCase()===issueType.toLowerCase())) suggestionMaster.push({id:genId('sug'), type:'Issue Type', value:issueType});
+      if(assignedTo && !suggestionMaster.some(x=>x.type==='Assigned To' && x.value.toLowerCase()===assignedTo.toLowerCase())) suggestionMaster.push({id:genId('sug'), type:'Assigned To', value:assignedTo});
+      if(!clientMaster.some(x=>x.name.toLowerCase()===clientName.toLowerCase())) clientMaster.push({id:genId('clm'), name:clientName, mobile:item.mobileNo, email:item.email, address:item.address});
+      return item;
+    }
+
+    function normalizeImportedClientMaster(row){
+      const name = String(row['Client Name'] || row['Name'] || row['clientName'] || row['client name'] || '').trim();
+      if(!name) return null;
+      return {
+        id: genId('clm'),
+        name,
+        mobile: String(row['Mobile'] || row['Mobile No'] || row['mobile'] || row['mobileNo'] || '').trim(),
+        email: String(row['Email'] || row['email'] || '').trim(),
+        address: String(row['Address'] || row['address'] || '').trim()
+      };
+    }
+
+    
+async function handleExcelImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/complaints',{ method:'POST', body: JSON.stringify({ rows }) }); await loadData(); renderAll(); closeImportChoiceModal(); alert(`Complaint import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Complaint import failed'); } }
+
+    
+async function handleClientMasterImport(file){ if(!file) return; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const sheet=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet,{defval:''}); try{ const out=await api('/import/client-master',{ method:'POST', body: JSON.stringify({ rows }) }); await loadData(); renderAll(); closeImportChoiceModal(); alert(`Client master import completed. Imported: ${out.imported || 0}`); }catch(err){ alert(err.message || 'Client master import failed'); } }
+    
+    function exportExcel(){ if(typeof XLSX==='undefined'){ alert('Excel library not loaded. Please use internet/CDN access.'); return; } const rows = filterComplaints().map(x=>({Ticket:x.ticket,'Client Name':x.clientName,Mobile:x.mobileNo,Email:x.email,Address:x.address,'Issue Type':x.issueType,'Issue Details':x.issueDetails,'Assigned To':x.assignedTo,Status:x.status,Priority:x.priority,'SLA Status':getSlaStatus(x),'SLA Due':x.slaDue?fmtDateTime(x.slaDue):'',Created:fmtDateTime(x.createdAt),Closed:x.closedAt?fmtDateTime(x.closedAt):'','Follow-up':x.followupDate,'Escalation Level':x.escalationLevel,'Escalated To':x.escalatedTo,Remarks:x.remarks,'Internal Notes':x.internalNotes})); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Complaints'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(clientMaster.map(x=>({Name:x.name,Mobile:x.mobile,Email:x.email,Address:x.address}))), 'Client Master'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(users.map(x=>({Username:x.username,Role:x.role,Created:x.createdAt}))), 'Users'); XLSX.writeFile(wb,'complaint_tracker_advanced_export.xlsx'); }
+
+    function resetComplaintForm(){
+      complaintEditId = null;
+      document.getElementById('complaintModalTitle').textContent = 'New Complaint';
+      Object.values(fieldMap).forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fStatus').value = 'Open';
+      document.getElementById('fPriority').value = 'Medium';
+    }
+
+    function openComplaintModal(){ document.getElementById('complaintModalBackdrop').classList.add('show'); }
+    function closeComplaintModal(){ document.getElementById('complaintModalBackdrop').classList.remove('show'); }
+    function openAmcModal(){ document.getElementById('amcModalBackdrop').classList.add('show'); }
+    function closeAmcModal(){ document.getElementById('amcModalBackdrop').classList.remove('show'); }
+    function closeDetailsModal(){ document.getElementById('detailsModalBackdrop').classList.remove('show'); }
+
+    function buildHistoryEntry(action, note=''){
+      return {time: nowIso(), action, note, by: currentUser?.username || 'system'};
+    }
+
+    function autoSlaDateByPriority(priority){
+      const base = new Date();
+      const hoursMap = {Critical:4, High:8, Medium:24, Low:48};
+      base.setHours(base.getHours() + (hoursMap[priority] || 24));
+      return toInputDateTime(base.toISOString());
+    }
+
+    function getClientMasterEmailByName(name){
+      const c = clientMaster.find(x=>x.name.toLowerCase()===String(name||'').trim().toLowerCase());
+      return c?.email || '';
+    }
+
+
+    const EMAIL_SETTINGS_KEY = 'cta_advanced_email_settings';
+    const DEFAULT_EMAIL_CONFIG = {
+      fixedSenderEmail: "support@yourcompany.com",
+      fixedSenderName: "Support Team",
+      backendSendEndpoint: ""
+    };
+    function loadEmailConfig(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(EMAIL_SETTINGS_KEY) || '{}');
+        return {
+          fixedSenderEmail: saved.fixedSenderEmail || DEFAULT_EMAIL_CONFIG.fixedSenderEmail,
+          fixedSenderName: saved.fixedSenderName || DEFAULT_EMAIL_CONFIG.fixedSenderName,
+          backendSendEndpoint: saved.backendSendEndpoint || DEFAULT_EMAIL_CONFIG.backendSendEndpoint
+        };
+      }catch(e){
+        return {...DEFAULT_EMAIL_CONFIG};
+      }
+    }
+    let EMAIL_CONFIG = loadEmailConfig();
+    window.EMAIL_CONFIG = EMAIL_CONFIG;
+    function saveEmailConfig(config){
+      EMAIL_CONFIG = {
+        fixedSenderEmail: config.fixedSenderEmail || DEFAULT_EMAIL_CONFIG.fixedSenderEmail,
+        fixedSenderName: config.fixedSenderName || DEFAULT_EMAIL_CONFIG.fixedSenderName,
+        backendSendEndpoint: config.backendSendEndpoint || ""
+      };
+      window.EMAIL_CONFIG = EMAIL_CONFIG;
+      localStorage.setItem(EMAIL_SETTINGS_KEY, JSON.stringify(EMAIL_CONFIG));
+      updateEmailConfigHints();
+    }
+
+
+    function updateEmailConfigHints(){
+      const senderHint = document.getElementById('emailSenderHint');
+      if(senderHint) senderHint.textContent = `Emails will be sent from ${EMAIL_CONFIG.fixedSenderName} <${EMAIL_CONFIG.fixedSenderEmail}>`;
+      const fromHint = document.getElementById('complaintEmailFromHint');
+      if(fromHint) fromHint.textContent = `From: ${EMAIL_CONFIG.fixedSenderEmail}`;
+      const nameInput = document.getElementById('emailSenderNameInput');
+      const emailInput = document.getElementById('emailSenderEmailInput');
+      const endpointInput = document.getElementById('emailBackendEndpointInput');
+      if(nameInput) nameInput.value = EMAIL_CONFIG.fixedSenderName || '';
+      if(emailInput) emailInput.value = EMAIL_CONFIG.fixedSenderEmail || '';
+      if(endpointInput) endpointInput.value = EMAIL_CONFIG.backendSendEndpoint || '';
+    }
+
+    function openEmailSettingsModal(){
+      updateEmailConfigHints();
+      const backdrop = document.getElementById('emailSettingsModalBackdrop');
+      if(backdrop) backdrop.classList.add('show');
+    }
+
+    function closeEmailSettingsModal(){
+      const backdrop = document.getElementById('emailSettingsModalBackdrop');
+      if(backdrop) backdrop.classList.remove('show');
+    }
+
+    function persistEmailSettingsFromForm(){
+      const fixedSenderName = (document.getElementById('emailSenderNameInput')?.value || '').trim();
+      const fixedSenderEmail = (document.getElementById('emailSenderEmailInput')?.value || '').trim();
+      const backendSendEndpoint = (document.getElementById('emailBackendEndpointInput')?.value || '').trim();
+      if(!fixedSenderName || !fixedSenderEmail){
+        alert('Sender name and sender email are required.');
+        return;
+      }
+      saveEmailConfig({ fixedSenderName, fixedSenderEmail, backendSendEndpoint });
+      closeEmailSettingsModal();
+      toast('Email settings saved');
+    }
+
+    function resetEmailSettings(){
+      saveEmailConfig(DEFAULT_EMAIL_CONFIG);
+      updateEmailConfigHints();
+      toast('Email settings reset to default');
+    }
+
+    function buildComplaintEmailPayload(item){
+      return {
+        from: EMAIL_CONFIG.fixedSenderEmail,
+        fromName: EMAIL_CONFIG.fixedSenderName,
+        to: item.email || getClientMasterEmailByName(item.clientName),
+        subject: `Complaint Registered - ${item.ticket}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;">
+            <p>Dear ${escapeHtml(item.clientName)},</p>
+            <p>Your complaint has been registered successfully.</p>
+            <table style="border-collapse:collapse;">
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Ticket No</strong></td><td>${escapeHtml(item.ticket)}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Issue Type</strong></td><td>${escapeHtml(item.issueType)}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Issue Details</strong></td><td>${escapeHtml(item.issueDetails)}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Assigned To</strong></td><td>${escapeHtml(item.assignedTo || '-')}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Status</strong></td><td>${escapeHtml(item.status)}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Priority</strong></td><td>${escapeHtml(item.priority)}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>SLA Due</strong></td><td>${item.slaDue ? fmtDateTime(item.slaDue) : '-'}</td></tr>
+              <tr><td style="padding:4px 10px 4px 0;"><strong>Created On</strong></td><td>${fmtDateTime(item.createdAt)}</td></tr>
+            </table>
+            <p>Regards,<br>${escapeHtml(EMAIL_CONFIG.fixedSenderName)}<br>${escapeHtml(EMAIL_CONFIG.fixedSenderEmail)}</p>
+          </div>`
+      };
+    }
+
+    
+async function sendComplaintEmail(item, mode='manual'){
+  const recipient = getClientMasterEmailByName(item.clientName) || item.email;
+  if(!recipient){ alert('Client email not found in client master.'); return false; }
+  const endpoint = (EMAIL_CONFIG.backendSendEndpoint || '/send-email').trim() || '/send-email';
+  try{
+    const out = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json', ...(currentUser ? {'x-role': String(currentUser.role||'').toLowerCase()} : {})}, body: JSON.stringify({ complaintId: item.id, to: recipient, mode }) });
+    const data = await out.json().catch(()=>({}));
+    if(!out.ok || data.success === false) throw new Error(data.message || 'Email send failed');
+    toast(data.message || `Email sent to ${recipient}`);
+    return true;
+  }catch(err){ console.error(err); alert(err.message || 'Email send failed'); return false; }
+}
+
+    async function askAndSendComplaintEmail(item){
+      const masterEmail = getClientMasterEmailByName(item.clientName);
+      if(masterEmail && (!item.email || item.email !== masterEmail)) item.email = masterEmail;
+      if(!item.email){
+        alert('Client email not found in client master. Please add email in Master first.');
+        return false;
+      }
+      const sendNow = confirm(`Complaint saved successfully.\n\nSend email to ${item.email}?\n\nFrom: ${EMAIL_CONFIG.fixedSenderEmail}`);
+      if(!sendNow) return false;
+      return await sendComplaintEmail(item, 'save-confirmation');
+    }
+
+    
+async function saveComplaint(){
+  const data=Object.fromEntries(Object.entries(fieldMap).map(([key,id])=>[key, document.getElementById(id).value.trim()]));
+  if(!data.clientName || !data.issueType || !data.issueDetails){ alert('Client name, issue type and issue details are required.'); return; }
+  const masterEmail=getClientMasterEmailByName(data.clientName); if(masterEmail) data.email=masterEmail;
+  const payload={ clientName:data.clientName, mobile:data.mobileNo, email:data.email, address:data.address, issueType:data.issueType, issueDetails:data.issueDetails, assignedTo:data.assignedTo, status:data.status || 'Open', priority:data.priority || 'Medium', slaDue:data.slaDue ? new Date(data.slaDue).toISOString() : '', followupDate:data.followupDate || '', escalationLevel:data.escalationLevel || '', escalatedTo:data.escalatedTo || '', escalationRemarks:data.escalationRemarks || '', remarks:data.remarks || '', internalNotes:data.internalNotes || '' };
+  try{ let savedId=complaintEditId; if(complaintEditId) await api(`/complaints/${complaintEditId}`, { method:'PUT', body: JSON.stringify(payload) }); else { const out=await api('/complaints', { method:'POST', body: JSON.stringify(payload) }); savedId=String(out.id); } await loadData(); renderAll(); closeComplaintModal(); resetComplaintForm(); toast('Complaint saved'); if(!complaintEditId){ const created=complaints.find(x=>x.id===String(savedId)); if(created) await askAndSendComplaintEmail(created); } }catch(err){ alert(err.message || 'Complaint save failed'); }
+}
+
+window.editComplaint = function(id){
+      const item = complaints.find(x=>x.id===id); if(!item) return;
+      complaintEditId = id;
+      document.getElementById('complaintModalTitle').textContent = `Edit Complaint · ${item.ticket}`;
+      for(const [key, inputId] of Object.entries(fieldMap)){
+        const el = document.getElementById(inputId);
+        if(key === 'slaDue') el.value = toInputDateTime(item[key]);
+        else el.value = item[key] || '';
+      }
+      openComplaintModal();
+    }
+
+    window.viewComplaint = function(id){
+      const item = complaints.find(x=>x.id===id); if(!item) return;
+      document.getElementById('detailsTitle').textContent = `${item.ticket} · ${item.clientName}`;
+      const history = (item.history || []).map(h=>`<div class="timeline-row"><strong>${escapeHtml(h.action)}</strong><div>${escapeHtml(h.note || '-')}</div><div class="history-time">${fmtDateTime(h.time)} · by ${escapeHtml(h.by || 'system')}</div></div>`).join('');
+      document.getElementById('detailsBody').innerHTML = `
+        <div class="history-list">
+          <div class="history-item"><strong>Issue</strong><div>${escapeHtml(item.issueType)} · ${escapeHtml(item.issueDetails)}</div></div>
+          <div class="history-item"><strong>Status / Priority / SLA</strong><div>${item.status} · ${item.priority} · ${getSlaStatus(item)}</div><div class="history-time">SLA Due: ${item.slaDue ? fmtDateTime(item.slaDue) : '-'}</div></div>
+          <div class="history-item"><strong>Follow-up</strong><div>${item.followupDate ? fmtDate(item.followupDate) : '-'}</div></div>
+          <div class="history-item"><strong>Escalation</strong><div>${item.escalationLevel || 'None'} ${item.escalatedTo ? '→ ' + escapeHtml(item.escalatedTo) : ''}</div><div class="history-time">${escapeHtml(item.escalationRemarks || '-')}</div></div>
+          <div class="history-item"><strong>Customer Remarks</strong><div>${escapeHtml(item.remarks || '-')}</div></div>
+          <div class="history-item"><strong>Internal Notes</strong><div>${escapeHtml(item.internalNotes || '-')}</div></div>
+        </div>
+        <div style="margin-top:18px;"><strong>Audit Timeline</strong></div>
+        <div class="timeline-wrap" style="margin-top:12px;">${history || '<div class="empty-state">No history available.</div>'}</div>
+      `;
+      document.getElementById('detailsModalBackdrop').classList.add('show');
+    }
+
+    
+window.changeComplaintStatus = async function(id, newStatus){
+      const item = complaints.find(x => String(x.id) === String(id));
+      if(!item) return;
+
+      const oldStatus = item.status || 'Open';
+      if(oldStatus === newStatus) return;
+
+      const confirmChange = confirm(`Change status from "${oldStatus}" to "${newStatus}"?`);
+      if(!confirmChange){
+        renderComplaints();
+        return;
+      }
+
+      let closeRemark = '';
+      if(newStatus === 'Closed'){
+        closeRemark = prompt('Enter closing remark:') || '';
+        if(!closeRemark.trim()){
+          alert('Closing remark is required.');
+          renderComplaints();
+          return;
+        }
+      }
+
+      const backup = JSON.parse(JSON.stringify(item));
+
+      item.status = newStatus;
+      item.closedAt = newStatus === 'Closed' ? new Date().toISOString() : '';
+
+      if(newStatus === 'Closed' && closeRemark.trim()){
+        const stamp = new Date().toLocaleString('en-GB');
+        item.remarks = (item.remarks ? item.remarks + '\n' : '') + `[${stamp}] Closing Remark: ${closeRemark.trim()}`;
+      }
+
+      if(!Array.isArray(item.history)) item.history = [];
+      item.history.unshift({
+        at: new Date().toISOString(),
+        action: `Status changed from ${oldStatus} to ${newStatus}`,
+        by: currentUser?.username || 'System'
+      });
+
+      try{
+        await api(`/complaints/${id}`, {
+          method:'PUT',
+          body: JSON.stringify({
+            clientName:item.clientName,
+            mobile:item.mobileNo,
+            email:item.email,
+            address:item.address,
+            issueType:item.issueType,
+            issueDetails:item.issueDetails,
+            assignedTo:item.assignedTo,
+            status:item.status,
+            priority:item.priority,
+            slaDue:item.slaDue,
+            followupDate:item.followupDate,
+            escalationLevel:item.escalationLevel,
+            escalatedTo:item.escalatedTo,
+            escalationRemarks:item.escalationRemarks,
+            remarks:item.remarks,
+            internalNotes:item.internalNotes,
+            closedAt:item.closedAt,
+            history:item.history
+          })
+        });
+        await loadData();
+        renderAll();
+        toast(`Status changed to ${newStatus}`);
+      }catch(err){
+        Object.assign(item, backup);
+        renderComplaints();
+        renderDashboard();
+        renderReports();
+        alert(err.message || 'Status update failed');
+      }
+    }
+
+    window.quickCloseComplaint = function(id){
+      changeComplaintStatus(id, 'Closed');
+    }
+
+    window.manualSendComplaintEmail = async function(id){
+      const item = complaints.find(x=>x.id===id); if(!item) return;
+      const masterEmail = getClientMasterEmailByName(item.clientName);
+      if(masterEmail) item.email = masterEmail;
+      if(!item.email){ alert('Client email not found in client master.'); return; }
+      if(!confirm(`Send complaint email to ${item.email}?\n\nFrom: ${EMAIL_CONFIG.fixedSenderEmail}`)) return;
+      await sendComplaintEmail(item, 'manual');
+    }
+
+    window.deleteComplaint = async function(id){ const item=complaints.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete ${item.ticket}?`)) return; try{ await api(`/complaints/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('Complaint deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+
+    function resetAmcForm(){
+      amcEditId = null;
+      document.getElementById('amcModalTitle').textContent = 'New AMC';
+      ['aClientName','aType','aStart','aEnd','aAmount','aRenewalAmount','aAssigned','aNote'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('aType').value='Software AMC';
+    }
+
+    
+async function saveAmc(){ const data={ clientName:document.getElementById('aClientName').value.trim(), type:document.getElementById('aType').value, start:document.getElementById('aStart').value, end:document.getElementById('aEnd').value, amount:document.getElementById('aAmount').value, renewalAmount:document.getElementById('aRenewalAmount').value, assigned:document.getElementById('aAssigned').value.trim(), note:document.getElementById('aNote').value.trim() }; if(!data.clientName || !data.start || !data.end){ alert('Client, start date and end date are required.'); return; } try{ if(amcEditId) await api(`/amc/${amcEditId}`, { method:'PUT', body: JSON.stringify(data) }); else await api('/amc', { method:'POST', body: JSON.stringify(data) }); await loadData(); renderAll(); closeAmcModal(); resetAmcForm(); toast('AMC saved'); }catch(err){ alert(err.message || 'AMC save failed'); } }
+
+    window.editAmc = function(id){
+      const item = amcs.find(x=>x.id===id); if(!item) return;
+      amcEditId = id;
+      document.getElementById('amcModalTitle').textContent = `Edit AMC · ${item.clientName}`;
+      document.getElementById('aClientName').value = item.clientName || '';
+      document.getElementById('aType').value = item.type || 'Software AMC';
+      document.getElementById('aStart').value = item.start || '';
+      document.getElementById('aEnd').value = item.end || '';
+      document.getElementById('aAmount').value = item.amount || '';
+      document.getElementById('aRenewalAmount').value = item.renewalAmount || '';
+      document.getElementById('aAssigned').value = item.assigned || '';
+      document.getElementById('aNote').value = item.note || '';
+      openAmcModal();
+    }
+
+    window.renewAmc = function(id){
+      const item = amcs.find(x=>x.id===id); if(!item) return;
+      const start = new Date(item.end); start.setDate(start.getDate()+1);
+      const end = new Date(start); end.setFullYear(end.getFullYear()+1);
+      amcs.unshift({
+        id: genId('amc'), clientName:item.clientName, type:item.type, start:start.toISOString().slice(0,10), end:end.toISOString().slice(0,10),
+        amount:item.renewalAmount || item.amount, renewalAmount:item.renewalAmount || item.amount, assigned:item.assigned, note:'Renewed from previous AMC'
+      });
+      saveLocal(); renderAll(); toast('AMC renewed for 1 year');
+    }
+
+    window.deleteAmc = async function(id){ const item=amcs.find(x=>x.id===id); if(!item) return; if(!confirm(`Delete AMC for ${item.clientName}?`)) return; try{ await api(`/amc/${id}`, { method:'DELETE' }); await loadData(); renderAll(); toast('AMC deleted'); }catch(err){ alert(err.message || 'Delete failed'); } }
+
+    function exportCsv(){
+      const rows = filterComplaints();
+      const headers = ['Ticket','Client Name','Mobile','Email','Address','Issue Type','Issue Details','Assigned To','Status','Priority','SLA Status','SLA Due','Created','Closed','Follow-up','Escalation Level','Escalated To','Remarks','Internal Notes'];
+      const csv = [headers.join(',')].concat(rows.map(x => [
+        x.ticket,x.clientName,x.mobileNo,x.email,x.address,x.issueType,x.issueDetails,x.assignedTo,x.status,x.priority,getSlaStatus(x),x.slaDue,x.createdAt,x.closedAt,x.followupDate,x.escalationLevel,x.escalatedTo,x.remarks,x.internalNotes
+      ].map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(','))).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'complaint_tracker_advanced_export.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateToolbarVisibility(sectionId){
+      const filtersBtn = document.getElementById('toggleFiltersBtn');
+      const importBtn = document.getElementById('importExcelBtn');
+      const exportExcel = document.getElementById('exportExcelBtn');
+      const exportCsv = document.getElementById('exportCsvBtn');
+      const masterBtn = document.getElementById('openMasterBtn');
+      const usersBtn = document.getElementById('openUsersBtn');
+      filtersBtn.classList.toggle('hidden', sectionId !== 'complaintsSection');
+      importBtn.classList.remove('hidden');
+      exportExcel.classList.remove('hidden');
+      exportCsv.classList.remove('hidden');
+      masterBtn.classList.remove('hidden');
+      usersBtn.classList.remove('hidden');
+    }
+
+    function switchSection(sectionId){
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      document.querySelectorAll('.nav-btn[data-section]').forEach(b=>b.classList.toggle('active', b.dataset.section===sectionId));
+      const map = {dashboardSection:'Advanced Service Dashboard', complaintsSection:'Complaint Register', amcSection:'AMC Management', reportsSection:'Performance Reports', masterSection:'Master Management', usersSection:'User Management'};
+      document.getElementById('sectionHeading').textContent = map[sectionId] || 'Complaint Tracker';
+      updateToolbarVisibility(sectionId);
+    }
+
+    function resetFilters(){
+      ['globalSearch','filterAssigned','filterClient','filterFromDate','filterToDate','filterIssueType'].forEach(id=>document.getElementById(id).value='');
+      ['filterStatus','filterPriority','filterSla','filterFollowupDue','filterEscalated'].forEach(id=>document.getElementById(id).value='');
+      activeQuickChip = null;
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      renderComplaints();
+    }
+
+    function applyQuickFilter(type){
+      resetFilters();
+      activeQuickChip = type;
+      document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.quick===type));
+      const now = new Date();
+      if(type === 'today') document.getElementById('filterFromDate').value = document.getElementById('filterToDate').value = today();
+      if(type === 'week'){
+        const start = new Date(now); start.setDate(now.getDate()-7);
+        document.getElementById('filterFromDate').value = start.toISOString().slice(0,10);
+        document.getElementById('filterToDate').value = today();
+      }
+      if(type === 'month'){
+        const start = new Date(now); start.setDate(now.getDate()-30);
+        document.getElementById('filterFromDate').value = start.toISOString().slice(0,10);
+        document.getElementById('filterToDate').value = today();
+      }
+      if(type === 'open') document.getElementById('filterStatus').value = 'Open';
+      if(type === 'critical') document.getElementById('filterPriority').value = 'Critical';
+      if(type === 'breached') document.getElementById('filterSla').value = 'Breached';
+      if(type === 'followup') document.getElementById('filterFollowupDue').value = 'yes';
+      renderComplaints();
+    }
+
+    
+async function doLogin(){ const u=document.getElementById('loginUser').value.trim(); const p=document.getElementById('loginPass').value.trim(); try{ const out=await api('/login', { method:'POST', body: JSON.stringify({ username:u, password:p }) }); if(!out || out.success===false){ alert(out?.message || 'Invalid login'); return; } currentUser={ username:out.user.username, role:out.user.role }; saveLocal(); await loadData(); document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('appShell').classList.remove('hidden'); renderAll(); toast(`Logged in as ${out.user.username}`); }catch(err){ alert(err.message || 'Login failed'); } }
+
+function doLogout(){
+      currentUser = null;
+      saveLocal();
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    function bindEvents(){
+      document.getElementById('loginBtn').addEventListener('click', doLogin);
+      document.getElementById('logoutBtn').addEventListener('click', doLogout);
+      document.getElementById('themeBtnLogin').addEventListener('click', toggleTheme);
+      document.getElementById('themeBtnSide').addEventListener('click', toggleTheme);
+      document.querySelectorAll('.nav-btn[data-section]').forEach(btn=>btn.addEventListener('click', ()=>switchSection(btn.dataset.section)));
+      document.getElementById('openComplaintBtn').addEventListener('click', ()=>{ resetComplaintForm(); openComplaintModal(); });
+      document.getElementById('navNewComplaint').addEventListener('click', ()=>{ switchSection('complaintsSection'); resetComplaintForm(); openComplaintModal(); });
+      document.getElementById('openAMCBtn').addEventListener('click', ()=>{ resetAmcForm(); openAmcModal(); });
+      document.getElementById('navNewAMC').addEventListener('click', ()=>{ switchSection('amcSection'); resetAmcForm(); openAmcModal(); });
+      document.getElementById('amcNewTopBtn').addEventListener('click', ()=>{ resetAmcForm(); openAmcModal(); });
+      document.getElementById('closeComplaintModal').addEventListener('click', closeComplaintModal);
+      document.getElementById('cancelComplaintBtn').addEventListener('click', closeComplaintModal);
+      document.getElementById('saveComplaintBtn').addEventListener('click', saveComplaint);
+      document.getElementById('closeDetailsModal').addEventListener('click', closeDetailsModal);
+      document.getElementById('closeAmcModal').addEventListener('click', closeAmcModal);
+      document.getElementById('cancelAmcBtn').addEventListener('click', closeAmcModal);
+      document.getElementById('saveAmcBtn').addEventListener('click', saveAmc);
+      document.getElementById('autoSlaBtn').addEventListener('click', ()=> document.getElementById('fSlaDue').value = autoSlaDateByPriority(document.getElementById('fPriority').value));
+      document.getElementById('fPriority').addEventListener('change', ()=> document.getElementById('fSlaDue').value = autoSlaDateByPriority(document.getElementById('fPriority').value));
+      document.getElementById('importExcelBtn').addEventListener('click', openImportChoiceModal);
+      document.getElementById('importComplaintsInput').addEventListener('change', e=>{ handleExcelImport(e.target.files[0]); e.target.value=''; });
+      document.getElementById('importClientMasterInput').addEventListener('change', e=>{ handleClientMasterImport(e.target.files[0]); e.target.value=''; });
+      document.getElementById('chooseComplaintImportBtn').addEventListener('click', ()=>document.getElementById('importComplaintsInput').click());
+      document.getElementById('chooseClientMasterImportBtn').addEventListener('click', ()=>document.getElementById('importClientMasterInput').click());
+      document.getElementById('closeImportChoiceModal').addEventListener('click', closeImportChoiceModal);
+      document.getElementById('exportExcelBtn').addEventListener('click', exportExcel);
+      document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+      document.getElementById('openMasterBtn').addEventListener('click', ()=>switchSection('masterSection'));
+      document.getElementById('openUsersBtn').addEventListener('click', ()=>switchSection('usersSection'));
+      document.getElementById('openEmailSettingsBtn').addEventListener('click', openEmailSettingsModal);
+      document.getElementById('closeEmailSettingsModal').addEventListener('click', closeEmailSettingsModal);
+      document.getElementById('saveEmailSettingsBtn').addEventListener('click', persistEmailSettingsFromForm);
+      document.getElementById('resetEmailSettingsBtn').addEventListener('click', resetEmailSettings);
+document.getElementById('addClientMasterBtn').addEventListener('click', ()=>{ resetClientMasterForm(); openClientMasterModal(); });
+      document.getElementById('importClientMasterBtnInline').addEventListener('click', ()=>document.getElementById('importClientMasterInput').click());
+      document.getElementById('addSuggestionBtn').addEventListener('click', ()=>{ resetSuggestionForm(); openSuggestionModal(); });
+      document.getElementById('addUserBtn').addEventListener('click', ()=>{ resetUserForm(); openUserModal(); });
+      document.getElementById('closeClientMasterModal').addEventListener('click', closeClientMasterModal);
+      document.getElementById('cancelClientMasterBtn').addEventListener('click', closeClientMasterModal);
+      document.getElementById('saveClientMasterBtn').addEventListener('click', saveClientMaster);
+      document.getElementById('closeSuggestionModal').addEventListener('click', closeSuggestionModal);
+      document.getElementById('cancelSuggestionBtn').addEventListener('click', closeSuggestionModal);
+      document.getElementById('saveSuggestionBtn').addEventListener('click', saveSuggestion);
+      document.getElementById('closeUserModal').addEventListener('click', closeUserModal);
+      document.getElementById('cancelUserBtn').addEventListener('click', closeUserModal);
+      document.getElementById('saveUserBtn').addEventListener('click', saveUser);
+      document.getElementById('fClientName').addEventListener('change', e=>fillComplaintFromClientMaster(e.target.value));
+      document.getElementById('fClientName').addEventListener('blur', e=>fillComplaintFromClientMaster(e.target.value));
+      document.getElementById('toggleFiltersBtn').addEventListener('click', ()=> document.getElementById('advancedFiltersPanel').classList.toggle('hidden'));
+      document.getElementById('resetFiltersBtn').addEventListener('click', resetFilters);
+      document.getElementById('applyQuickFilterBtn').addEventListener('click', renderComplaints);
+      ['globalSearch','filterStatus','filterPriority','filterAssigned','filterClient','filterFromDate','filterToDate','filterSla','filterIssueType','filterFollowupDue','filterEscalated'].forEach(id => {
+        const el=document.getElementById(id); el.addEventListener('input', renderComplaints); el.addEventListener('change', renderComplaints);
+      });
+      document.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click', ()=>applyQuickFilter(chip.dataset.quick)));
+      ['amcSearch','amcStatusFilter','amcTypeFilter'].forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input', renderAmc); el.addEventListener('change', renderAmc); });
+      document.getElementById('amcResetBtn').addEventListener('click', ()=>{ document.getElementById('amcSearch').value=''; document.getElementById('amcStatusFilter').value=''; document.getElementById('amcTypeFilter').value=''; renderAmc(); });
+      document.querySelectorAll('.modal-backdrop').forEach(backdrop=>backdrop.addEventListener('click', e=>{ if(e.target===backdrop) backdrop.classList.remove('show'); }));
+    }
+
+    
+async function init(){
+  bindEvents();
+  await loadData();
+  updateEmailConfigHints();
+  updateSidebarClock();
+  setInterval(updateSidebarClock, 1000);
+  if(currentUser){ document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('appShell').classList.remove('hidden'); renderAll(); switchSection('dashboardSection'); }
+}
+
+if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+	
+	function openComplaintModal(){
+  document.getElementById('complaintModalBackdrop').classList.add('show');
+
+  if(currentUser && currentUser.username){
+    document.getElementById('fAssignedTo').value = currentUser.username;
+  }
+}
+	
+  </script>
+
+
+  <div class="modal-backdrop" id="emailSettingsModalBackdrop">
+    <div class="modal-card" style="max-width:560px;">
+      <div class="modal-head">
+        <div>
+          <h3>Email Settings</h3>
+          <p class="section-note">Set fixed sender details for complaint emails.</p>
+        </div>
+        <button class="btn btn-soft" id="closeEmailSettingsModal" type="button">Close</button>
+      </div>
+      <div class="form-grid cols-1">
+        <div class="field full"><label>Sender Name</label><input id="emailSenderNameInput" type="text" placeholder="Support Team"></div>
+        <div class="field full"><label>Sender Email</label><input id="emailSenderEmailInput" type="email" placeholder="support@yourcompany.com"></div>
+        <div class="field full"><label>Backend Email API Endpoint</label><input id="emailBackendEndpointInput" type="text" placeholder="/send-email"></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+        <button class="btn btn-soft" id="resetEmailSettingsBtn" type="button">Reset Default</button>
+        <button class="btn btn-primary" id="saveEmailSettingsBtn" type="button">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
