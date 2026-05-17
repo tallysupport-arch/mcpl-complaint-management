@@ -1,78 +1,628 @@
 require('dotenv').config();
-const express=require('express');
-const sqlite3=require('sqlite3').verbose();
-const nodemailer=require('nodemailer');
-const cors=require('cors');
-const path=require('path');
-const fs=require('fs');
-const app=express();
-const PORT=Number(process.env.PORT||4000);
-const PROJECT_ROOT=__dirname;
-const PUBLIC_DIR=path.join(PROJECT_ROOT,'Public');
-const DB_FILE=path.join(PROJECT_ROOT,'complaints.db');
+
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const nodemailer = require('nodemailer');
+const cors = require('cors');
+const path = require('path');
+
+const app = express();
+const PORT = Number(process.env.PORT || 4000);
+
+const PROJECT_ROOT = __dirname;
+const PUBLIC_DIR = PROJECT_ROOT;
+const DB_FILE = path.join(PROJECT_ROOT, 'complaints.db');
+
 app.use(cors());
-app.use(express.json({limit:'10mb'}));
-if(!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR,{recursive:true});
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(PUBLIC_DIR));
-const db=new sqlite3.Database(DB_FILE);
-const run=(sql,params=[])=>new Promise((resolve,reject)=>db.run(sql,params,function(err){err?reject(err):resolve({id:this.lastID,changes:this.changes});}));
-const get=(sql,params=[])=>new Promise((resolve,reject)=>db.get(sql,params,(err,row)=>err?reject(err):resolve(row)));
-const all=(sql,params=[])=>new Promise((resolve,reject)=>db.all(sql,params,(err,rows)=>err?reject(err):resolve(rows)));
-const asyncHandler=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(err=>{console.error(err);res.status(500).json({success:false,message:err.message||'Server error'});});
-const normalizeStatus=status=>['Open','In Progress','Pending with Client','Closed'].includes(status)?status:'Open';
-const normalizeRole=(role='Viewer')=>{const v=String(role).trim().toLowerCase();if(v==='admin')return 'Admin';if(v==='manager')return 'Manager';if(v==='engineer')return 'Engineer';return 'Viewer';};
-const allowEdit=(req,res,next)=>{const role=String(req.headers['x-role']||'').toLowerCase();if(role==='viewer')return res.status(403).json({success:false,message:'View-only access'});next();};
-const allowAdmin=(req,res,next)=>{const role=String(req.headers['x-role']||'').toLowerCase();if(role!=='admin')return res.status(403).json({success:false,message:'Admin access required'});next();};
-const ticketNoFromId=id=>`CT-${new Date().getFullYear()}-${String(id).padStart(4,'0')}`;
-async function ensureColumn(table,column,ddl){const cols=await all(`PRAGMA table_info(${table})`);if(!cols.some(c=>c.name===column)) await run(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);}
-async function initDb(){await run('PRAGMA journal_mode = WAL;');await run('PRAGMA foreign_keys = ON;');await run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'Viewer', created_at TEXT DEFAULT (datetime('now','localtime')))`);await run(`CREATE TABLE IF NOT EXISTS client_master (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, mobile TEXT, email TEXT, address TEXT, created_at TEXT DEFAULT (datetime('now','localtime')))`);await run(`CREATE TABLE IF NOT EXISTS suggestion_master (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, value TEXT NOT NULL, created_at TEXT DEFAULT (datetime('now','localtime')), UNIQUE(type, value))`);await run(`CREATE TABLE IF NOT EXISTS complaints (id INTEGER PRIMARY KEY AUTOINCREMENT, ticketNo TEXT UNIQUE, clientName TEXT, mobile TEXT, email TEXT, address TEXT, issueType TEXT, issueDetails TEXT, assignedTo TEXT, status TEXT NOT NULL DEFAULT 'Open', priority TEXT NOT NULL DEFAULT 'Medium', remarks TEXT, created_at TEXT DEFAULT (datetime('now','localtime')), closed_at TEXT)`);await ensureColumn('complaints','slaDue',`slaDue TEXT`);await ensureColumn('complaints','followupDate',`followupDate TEXT`);await ensureColumn('complaints','escalationLevel',`escalationLevel TEXT`);await ensureColumn('complaints','escalatedTo',`escalatedTo TEXT`);await ensureColumn('complaints','escalationRemarks',`escalationRemarks TEXT`);await ensureColumn('complaints','internalNotes',`internalNotes TEXT`);await run(`CREATE TABLE IF NOT EXISTS amc (id INTEGER PRIMARY KEY AUTOINCREMENT, clientName TEXT, type TEXT, start TEXT, end TEXT, amount TEXT, assigned TEXT, created_at TEXT DEFAULT (datetime('now','localtime')))`);await ensureColumn('amc','renewalAmount',`renewalAmount TEXT`);await ensureColumn('amc','note',`note TEXT`);await run(`CREATE TABLE IF NOT EXISTS email_log (id INTEGER PRIMARY KEY AUTOINCREMENT, complaint_id INTEGER, recipient TEXT, subject TEXT, body TEXT, sent_by TEXT, sent_at TEXT DEFAULT (datetime('now','localtime')), status TEXT, error_message TEXT)`);await run(`INSERT OR IGNORE INTO users(id, username, password, role) VALUES (1,'admin','1234','Admin')`);}
-const transporter=nodemailer.createTransport({host:process.env.EMAIL_HOST||'smtp.gmail.com',port:Number(process.env.EMAIL_PORT||587),secure:String(process.env.EMAIL_SECURE||'false')==='true',auth:process.env.EMAIL_USER&&process.env.EMAIL_PASS?{user:process.env.EMAIL_USER,pass:process.env.EMAIL_PASS}:undefined});
-async function verifyMailer(){if(!process.env.EMAIL_USER||!process.env.EMAIL_PASS)return{ready:false,message:'Email credentials missing in .env'};try{await transporter.verify();return{ready:true,message:'SMTP is ready'};}catch(e){return{ready:false,message:e.message};}}
-function buildComplaintMail(c) {
-  const subject = `Complaint Registered - ${c.ticketNo}`;
 
-  const body = [
-    `Dear ${c.clientName || 'Client'},`,
-    '',
-    'Your complaint has been registered/updated successfully.',
-    '',
-    `Ticket No: ${c.ticketNo || '-'}`,
-    `Issue Type: ${c.issueType || '-'}`,
-    `Issue Details: ${c.issueDetails || '-'}`,
-    `Assigned To: ${c.assignedTo || '-'}`,
-    `Status: ${c.status || '-'}`,
-    `Priority: ${c.priority || '-'}`,
-    `Created On: ${c.created_at || '-'}`,
-    '',
-    'Regards,',
-    `${process.env.EMAIL_FROM_NAME || 'Support Team'}`
-  ].join('\n');
+const db = new sqlite3.Database(DB_FILE);
 
-  return { subject, body };
+const run = (sql, params = []) =>
+  new Promise((resolve, reject) =>
+    db.run(sql, params, function (err) {
+      err ? reject(err) : resolve({ id: this.lastID, changes: this.changes });
+    })
+  );
+
+const all = (sql, params = []) =>
+  new Promise((resolve, reject) =>
+    db.all(sql, params, (err, rows) => {
+      err ? reject(err) : resolve(rows);
+    })
+  );
+
+const asyncHandler = (fn) => (req, res) =>
+  Promise.resolve(fn(req, res)).catch((err) => {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Server error'
+    });
+  });
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT || 587),
+  secure: String(process.env.EMAIL_SECURE || 'false') === 'true',
+  auth:
+    process.env.EMAIL_USER && process.env.EMAIL_PASS
+      ? { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+      : undefined
+});
+
+async function initDb() {
+  await run(`
+    CREATE TABLE IF NOT EXISTS complaints (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      ticketNo TEXT,
+      clientName TEXT,
+      mobile TEXT,
+      email TEXT,
+      address TEXT,
+      issueType TEXT,
+      issueDetails TEXT,
+      assignedTo TEXT,
+      status TEXT,
+      priority TEXT,
+      slaDue TEXT,
+      followupDate TEXT,
+      escalationLevel TEXT,
+      escalatedTo TEXT,
+      escalationRemarks TEXT,
+      remarks TEXT,
+      internalNotes TEXT,
+      closed_at TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'Viewer',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS amc (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clientName TEXT,
+      type TEXT,
+      start TEXT,
+      end TEXT,
+      amount TEXT,
+      renewalAmount TEXT,
+      assigned TEXT,
+      note TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS client_master (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      mobile TEXT,
+      email TEXT,
+      address TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS suggestion_master (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      type TEXT NOT NULL,
+      value TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(type, value)
+    )
+  `);
+
+  await run(`
+    INSERT OR IGNORE INTO users 
+    (id, username, password, role)
+    VALUES (1, 'admin', '1234', 'Admin')
+  `);
+
+  console.log('Database Initialized');
 }
-app.get('/',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'index.html')));app.get('/health',asyncHandler(async(req,res)=>{const smtp=await verifyMailer();res.json({ok:true,database:DB_FILE,smtp});}));app.post('/login',asyncHandler(async(req,res)=>{const {username,password}=req.body||{};const user=await get('SELECT id, username, role FROM users WHERE username=? AND password=?',[username,password]);if(!user)return res.json({success:false,message:'Invalid login'});res.json({success:true,user});}));
-app.get('/users',asyncHandler(async(req,res)=>res.json(await all('SELECT id, username, password, role, created_at FROM users ORDER BY id DESC'))));
-app.post('/users',allowAdmin,asyncHandler(async(req,res)=>{const {username,password,role}=req.body||{};if(!username||!password)return res.status(400).json({success:false,message:'Username and password required'});await run('INSERT INTO users(username,password,role) VALUES(?,?,?)',[username.trim(),password,normalizeRole(role)]);res.json({success:true});}));
-app.put('/users/:id',allowAdmin,asyncHandler(async(req,res)=>{const {username,password,role}=req.body||{};if(!username||!password)return res.status(400).json({success:false,message:'Username and password required'});await run('UPDATE users SET username=?, password=?, role=? WHERE id=?',[username.trim(),password,normalizeRole(role),req.params.id]);res.json({success:true});}));
-app.delete('/users/:id',allowAdmin,asyncHandler(async(req,res)=>{await run("DELETE FROM users WHERE id=? AND username<>'admin'",[req.params.id]);res.json({success:true});}));
-app.get('/client-master',asyncHandler(async(req,res)=>res.json(await all('SELECT * FROM client_master ORDER BY name'))));
-app.post('/client-master',allowEdit,asyncHandler(async(req,res)=>{const {name,mobile,email,address}=req.body||{};if(!name)return res.status(400).json({success:false,message:'Client name required'});await run('INSERT OR IGNORE INTO client_master(name,mobile,email,address) VALUES(?,?,?,?)',[name.trim(),mobile||'',email||'',address||'']);res.json({success:true});}));
-app.put('/client-master/:id',allowEdit,asyncHandler(async(req,res)=>{const {name,mobile,email,address}=req.body||{};if(!name)return res.status(400).json({success:false,message:'Client name required'});await run('UPDATE client_master SET name=?, mobile=?, email=?, address=? WHERE id=?',[name.trim(),mobile||'',email||'',address||'',req.params.id]);res.json({success:true});}));
-app.delete('/client-master/:id',allowEdit,asyncHandler(async(req,res)=>{await run('DELETE FROM client_master WHERE id=?',[req.params.id]);res.json({success:true});}));
-app.get('/suggestion-master',asyncHandler(async(req,res)=>res.json(await all('SELECT * FROM suggestion_master ORDER BY type, value'))));
-app.post('/suggestion-master',allowEdit,asyncHandler(async(req,res)=>{const {type,value}=req.body||{};if(!type||!value)return res.status(400).json({success:false,message:'Type and value required'});await run('INSERT OR IGNORE INTO suggestion_master(type,value) VALUES(?,?)',[type,value.trim()]);res.json({success:true});}));
-app.put('/suggestion-master/:id',allowEdit,asyncHandler(async(req,res)=>{const {type,value}=req.body||{};if(!type||!value)return res.status(400).json({success:false,message:'Type and value required'});await run('UPDATE suggestion_master SET type=?, value=? WHERE id=?',[type,value.trim(),req.params.id]);res.json({success:true});}));
-app.delete('/suggestion-master/:id',allowEdit,asyncHandler(async(req,res)=>{await run('DELETE FROM suggestion_master WHERE id=?',[req.params.id]);res.json({success:true});}));
-app.get('/complaints',asyncHandler(async(req,res)=>res.json(await all('SELECT * FROM complaints ORDER BY id DESC'))));
-app.get('/complaints/:id',asyncHandler(async(req,res)=>{const row=await get('SELECT * FROM complaints WHERE id=?',[req.params.id]);if(!row)return res.status(404).json({success:false,message:'Complaint not found'});res.json(row);}));
-app.post('/complaints',allowEdit,asyncHandler(async(req,res)=>{const c=req.body||{};const status=normalizeStatus(c.status);const closed=status==='Closed'?new Date().toISOString():null;const ins=await run(`INSERT INTO complaints (clientName,mobile,email,address,issueType,issueDetails,assignedTo,status,priority,slaDue,followupDate,escalationLevel,escalatedTo,escalationRemarks,remarks,internalNotes,closed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[c.clientName||'',c.mobile||'',c.email||'',c.address||'',c.issueType||'',c.issueDetails||'',c.assignedTo||'',status,c.priority||'Medium',c.slaDue||'',c.followupDate||'',c.escalationLevel||'',c.escalatedTo||'',c.escalationRemarks||'',c.remarks||'',c.internalNotes||'',closed]);const ticketNo=ticketNoFromId(ins.id);await run('UPDATE complaints SET ticketNo=? WHERE id=?',[ticketNo,ins.id]);res.json({success:true,id:ins.id,ticketNo});}));
-app.put('/complaints/:id',allowEdit,asyncHandler(async(req,res)=>{const c=req.body||{};const status=normalizeStatus(c.status);const existing=await get('SELECT * FROM complaints WHERE id=?',[req.params.id]);if(!existing)return res.status(404).json({success:false,message:'Complaint not found'});const closed=status==='Closed'?(existing.closed_at||new Date().toISOString()):null;await run(`UPDATE complaints SET clientName=?, mobile=?, email=?, address=?, issueType=?, issueDetails=?, assignedTo=?, status=?, priority=?, slaDue=?, followupDate=?, escalationLevel=?, escalatedTo=?, escalationRemarks=?, remarks=?, internalNotes=?, closed_at=? WHERE id=?`,[c.clientName||'',c.mobile||'',c.email||'',c.address||'',c.issueType||'',c.issueDetails||'',c.assignedTo||'',status,c.priority||'Medium',c.slaDue||'',c.followupDate||'',c.escalationLevel||'',c.escalatedTo||'',c.escalationRemarks||'',c.remarks||'',c.internalNotes||'',closed,req.params.id]);res.json({success:true});}));
-app.delete('/complaints/:id',allowEdit,asyncHandler(async(req,res)=>{await run('DELETE FROM complaints WHERE id=?',[req.params.id]);res.json({success:true});}));
-app.get('/amc',asyncHandler(async(req,res)=>res.json(await all('SELECT * FROM amc ORDER BY id DESC'))));
-app.post('/amc',allowEdit,asyncHandler(async(req,res)=>{const {clientName,type,start,end,amount,renewalAmount,assigned,note}=req.body||{};await run('INSERT INTO amc(clientName,type,start,end,amount,renewalAmount,assigned,note) VALUES(?,?,?,?,?,?,?,?)',[clientName||'',type||'',start||'',end||'',amount||'',renewalAmount||'',assigned||'',note||'']);res.json({success:true});}));
-app.put('/amc/:id',allowEdit,asyncHandler(async(req,res)=>{const {clientName,type,start,end,amount,renewalAmount,assigned,note}=req.body||{};await run('UPDATE amc SET clientName=?, type=?, start=?, end=?, amount=?, renewalAmount=?, assigned=?, note=? WHERE id=?',[clientName||'',type||'',start||'',end||'',amount||'',renewalAmount||'',assigned||'',note||'',req.params.id]);res.json({success:true});}));
-app.delete('/amc/:id',allowEdit,asyncHandler(async(req,res)=>{await run('DELETE FROM amc WHERE id=?',[req.params.id]);res.json({success:true});}));
-app.post('/import/complaints',allowEdit,asyncHandler(async(req,res)=>{const rows=Array.isArray(req.body?.rows)?req.body.rows:[];let count=0;for(const r of rows){const status=normalizeStatus(r.Status||r.status||'Open');const ins=await run(`INSERT INTO complaints (clientName,mobile,email,address,issueType,issueDetails,assignedTo,status,priority,slaDue,followupDate,escalationLevel,escalatedTo,escalationRemarks,remarks,internalNotes,closed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[r['Client Name']||r.ClientName||r.clientName||'',r['Mobile No.']||r.Mobile||r.mobile||'',r.Email||r.email||'',r.Address||r.address||'',r['Issue Type']||r.IssueType||r.issueType||'',r['Issue Details']||r.IssueDetails||r.issueDetails||'',r['Assigned To']||r.AssignedTo||r.assignedTo||'',status,r.Priority||r.priority||'Medium',r['SLA Due']||r.slaDue||'',r['Follow-up Date']||r.followupDate||'',r['Escalation Level']||r.escalationLevel||'',r['Escalated To']||r.escalatedTo||'',r['Escalation Remarks']||r.escalationRemarks||'',r.Remarks||r.remarks||'',r['Internal Notes']||r.internalNotes||'',status==='Closed'?new Date().toISOString():null]);await run('UPDATE complaints SET ticketNo=? WHERE id=?',[ticketNoFromId(ins.id),ins.id]);count++;}res.json({success:true,imported:count});}));
-app.post('/import/client-master',allowEdit,asyncHandler(async(req,res)=>{const rows=Array.isArray(req.body?.rows)?req.body.rows:[];let count=0;for(const r of rows){const name=r['Client Name']||r.Name||r.name;if(!name)continue;await run('INSERT OR IGNORE INTO client_master(name,mobile,email,address) VALUES(?,?,?,?)',[name,r.Mobile||r['Mobile No']||r.mobile||'',r.Email||r.email||'',r.Address||r.address||'']);count++;}res.json({success:true,imported:count});}));
-app.post('/send-email',allowEdit,asyncHandler(async(req,res)=>{const {complaintId,to}=req.body||{};if(!complaintId)return res.status(400).json({success:false,message:'complaintId required'});const complaint=await get('SELECT * FROM complaints WHERE id=?',[complaintId]);if(!complaint)return res.status(404).json({success:false,message:'Complaint not found'});const recipient=to||complaint.email||(await get('SELECT email FROM client_master WHERE name=?',[complaint.clientName]))?.email;if(!recipient)return res.status(400).json({success:false,message:'Client email not found'});const smtp=await verifyMailer();if(!smtp.ready){await run(`INSERT INTO email_log(complaint_id, recipient, subject, body, sent_by, status, error_message) VALUES (?,?,?,?,?,?,?)`,[complaintId,recipient,'','',process.env.EMAIL_USER||'','FAILED',smtp.message]);return res.status(500).json({success:false,message:`Email not sent: ${smtp.message}`});}const mail=buildComplaintMail(complaint);try{const info=await transporter.sendMail({from:`"${process.env.EMAIL_FROM_NAME||'Support Team'}" <${process.env.EMAIL_USER}>`,to:recipient,subject:mail.subject,text:mail.body});await run(`INSERT INTO email_log(complaint_id, recipient, subject, body, sent_by, status) VALUES (?,?,?,?,?,?)`,[complaintId,recipient,mail.subject,mail.body,process.env.EMAIL_USER||'','SENT']);res.json({success:true,message:`Email sent to ${recipient}`,messageId:info.messageId});}catch(e){await run(`INSERT INTO email_log(complaint_id, recipient, subject, body, sent_by, status, error_message) VALUES (?,?,?,?,?,?,?)`,[complaintId,recipient,mail.subject,mail.body,process.env.EMAIL_USER||'','FAILED',e.message]);throw e;}}));
-initDb().then(async()=>{const smtp=await verifyMailer();app.listen(PORT,()=>{console.log(`Server running at http://localhost:${PORT}`);console.log(`Database: ${DB_FILE}`);console.log(`SMTP: ${smtp.message}`);});}).catch(err=>{console.error('Init failed',err);process.exit(1);});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
+app.get('/health', asyncHandler(async (req, res) => {
+  res.json({
+    success: true,
+    status: 'Running',
+    database: DB_FILE
+  });
+}));
+
+app.post('/login', asyncHandler(async (req, res) => {
+  const { username, password } = req.body || {};
+
+  const rows = await all(
+    'SELECT id, username, role FROM users WHERE username = ? AND password = ?',
+    [username, password]
+  );
+
+  if (rows.length > 0) {
+    return res.json({
+      success: true,
+      user: rows[0]
+    });
+  }
+
+  res.json({
+    success: false,
+    message: 'Invalid Login'
+  });
+}));
+
+app.get('/users', asyncHandler(async (req, res) => {
+  const rows = await all(
+    'SELECT id, username, password, role, created_at FROM users ORDER BY id DESC'
+  );
+  res.json(rows);
+}));
+
+app.post('/users', asyncHandler(async (req, res) => {
+  const { username, password, role } = req.body || {};
+
+  if (!username || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Username and password required'
+    });
+  }
+
+  await run(
+    'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+    [username, password, role || 'Viewer']
+  );
+
+  res.json({
+    success: true,
+    message: 'User created'
+  });
+}));
+
+app.put('/users/:id', asyncHandler(async (req, res) => {
+  const { username, password, role } = req.body || {};
+
+  await run(
+    'UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?',
+    [username, password, role || 'Viewer', req.params.id]
+  );
+
+  res.json({
+    success: true,
+    message: 'User updated'
+  });
+}));
+
+app.delete('/users/:id', asyncHandler(async (req, res) => {
+  await run(
+    'DELETE FROM users WHERE id = ? AND username <> ?',
+    [req.params.id, 'admin']
+  );
+
+  res.json({
+    success: true,
+    message: 'User deleted'
+  });
+}));
+
+app.get('/complaints', asyncHandler(async (req, res) => {
+  const rows = await all('SELECT * FROM complaints ORDER BY id DESC');
+  res.json(rows);
+}));
+
+app.post('/complaints', asyncHandler(async (req, res) => {
+  const c = req.body || {};
+  const ticketNo = `CT-${Date.now()}`;
+  const closedAt = c.status === 'Closed' ? new Date().toISOString() : null;
+
+  const result = await run(
+    `
+    INSERT INTO complaints
+    (ticketNo, clientName, mobile, email, address, issueType, issueDetails, assignedTo, status, priority, slaDue, followupDate, escalationLevel, escalatedTo, escalationRemarks, remarks, internalNotes, closed_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      ticketNo,
+      c.clientName || '',
+      c.mobile || c.mobileNo || '',
+      c.email || '',
+      c.address || '',
+      c.issueType || '',
+      c.issueDetails || '',
+      c.assignedTo || '',
+      c.status || 'Open',
+      c.priority || 'Medium',
+      c.slaDue || '',
+      c.followupDate || '',
+      c.escalationLevel || '',
+      c.escalatedTo || '',
+      c.escalationRemarks || '',
+      c.remarks || '',
+      c.internalNotes || '',
+      closedAt
+    ]
+  );
+
+  res.json({
+    success: true,
+    id: result.id,
+    ticketNo
+  });
+}));
+
+app.put('/complaints/:id', asyncHandler(async (req, res) => {
+  const c = req.body || {};
+  const closedAt = c.status === 'Closed' ? new Date().toISOString() : null;
+
+  await run(
+    `
+    UPDATE complaints SET
+      clientName = ?,
+      mobile = ?,
+      email = ?,
+      address = ?,
+      issueType = ?,
+      issueDetails = ?,
+      assignedTo = ?,
+      status = ?,
+      priority = ?,
+      slaDue = ?,
+      followupDate = ?,
+      escalationLevel = ?,
+      escalatedTo = ?,
+      escalationRemarks = ?,
+      remarks = ?,
+      internalNotes = ?,
+      closed_at = ?
+    WHERE id = ?
+    `,
+    [
+      c.clientName || '',
+      c.mobile || c.mobileNo || '',
+      c.email || '',
+      c.address || '',
+      c.issueType || '',
+      c.issueDetails || '',
+      c.assignedTo || '',
+      c.status || 'Open',
+      c.priority || 'Medium',
+      c.slaDue || '',
+      c.followupDate || '',
+      c.escalationLevel || '',
+      c.escalatedTo || '',
+      c.escalationRemarks || '',
+      c.remarks || '',
+      c.internalNotes || '',
+      closedAt,
+      req.params.id
+    ]
+  );
+
+  res.json({
+    success: true,
+    message: 'Complaint updated'
+  });
+}));
+
+app.delete('/complaints/:id', asyncHandler(async (req, res) => {
+  await run('DELETE FROM complaints WHERE id = ?', [req.params.id]);
+
+  res.json({
+    success: true,
+    message: 'Complaint deleted'
+  });
+}));
+
+app.get('/amc', asyncHandler(async (req, res) => {
+  const rows = await all('SELECT * FROM amc ORDER BY id DESC');
+  res.json(rows);
+}));
+
+app.post('/amc', asyncHandler(async (req, res) => {
+  const a = req.body || {};
+
+  const result = await run(
+    `
+    INSERT INTO amc
+    (clientName, type, start, end, amount, renewalAmount, assigned, note)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      a.clientName || '',
+      a.type || '',
+      a.start || '',
+      a.end || '',
+      a.amount || '',
+      a.renewalAmount || '',
+      a.assigned || '',
+      a.note || ''
+    ]
+  );
+
+  res.json({
+    success: true,
+    id: result.id,
+    message: 'AMC created'
+  });
+}));
+
+app.put('/amc/:id', asyncHandler(async (req, res) => {
+  const a = req.body || {};
+
+  await run(
+    `
+    UPDATE amc SET
+      clientName = ?,
+      type = ?,
+      start = ?,
+      end = ?,
+      amount = ?,
+      renewalAmount = ?,
+      assigned = ?,
+      note = ?
+    WHERE id = ?
+    `,
+    [
+      a.clientName || '',
+      a.type || '',
+      a.start || '',
+      a.end || '',
+      a.amount || '',
+      a.renewalAmount || '',
+      a.assigned || '',
+      a.note || '',
+      req.params.id
+    ]
+  );
+
+  res.json({
+    success: true,
+    message: 'AMC updated'
+  });
+}));
+
+app.delete('/amc/:id', asyncHandler(async (req, res) => {
+  await run('DELETE FROM amc WHERE id = ?', [req.params.id]);
+
+  res.json({
+    success: true,
+    message: 'AMC deleted'
+  });
+}));
+
+app.get('/client-master', asyncHandler(async (req, res) => {
+  const rows = await all('SELECT * FROM client_master ORDER BY name ASC');
+  res.json(rows);
+}));
+
+app.post('/client-master', asyncHandler(async (req, res) => {
+  const { name, mobile, email, address } = req.body || {};
+
+  if (!name) {
+    return res.status(400).json({
+      success: false,
+      message: 'Client name required'
+    });
+  }
+
+  await run(
+    'INSERT OR IGNORE INTO client_master (name, mobile, email, address) VALUES (?, ?, ?, ?)',
+    [name, mobile || '', email || '', address || '']
+  );
+
+  res.json({
+    success: true,
+    message: 'Client created'
+  });
+}));
+
+app.put('/client-master/:id', asyncHandler(async (req, res) => {
+  const { name, mobile, email, address } = req.body || {};
+
+  await run(
+    'UPDATE client_master SET name = ?, mobile = ?, email = ?, address = ? WHERE id = ?',
+    [name || '', mobile || '', email || '', address || '', req.params.id]
+  );
+
+  res.json({
+    success: true,
+    message: 'Client updated'
+  });
+}));
+
+app.delete('/client-master/:id', asyncHandler(async (req, res) => {
+  await run('DELETE FROM client_master WHERE id = ?', [req.params.id]);
+
+  res.json({
+    success: true,
+    message: 'Client deleted'
+  });
+}));
+
+app.post('/import/client-master', asyncHandler(async (req, res) => {
+  const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+  let count = 0;
+
+  for (const r of rows) {
+    const name =
+      r['Client Name'] ||
+      r['Name'] ||
+      r.name ||
+      r.clientName ||
+      '';
+
+    if (!name) continue;
+
+    await run(
+      'INSERT OR IGNORE INTO client_master (name, mobile, email, address) VALUES (?, ?, ?, ?)',
+      [
+        name,
+        r['Mobile'] || r['Mobile No'] || r['Mobile No.'] || r.mobile || '',
+        r['Email'] || r.email || '',
+        r['Address'] || r.address || ''
+      ]
+    );
+
+    count++;
+  }
+
+  res.json({
+    success: true,
+    imported: count,
+    message: `${count} clients imported`
+  });
+}));
+
+app.get('/suggestion-master', asyncHandler(async (req, res) => {
+  const rows = await all('SELECT * FROM suggestion_master ORDER BY type, value');
+  res.json(rows);
+}));
+
+app.post('/suggestion-master', asyncHandler(async (req, res) => {
+  const { type, value } = req.body || {};
+
+  if (!type || !value) {
+    return res.status(400).json({
+      success: false,
+      message: 'Type and value required'
+    });
+  }
+
+  await run(
+    'INSERT OR IGNORE INTO suggestion_master (type, value) VALUES (?, ?)',
+    [type, value]
+  );
+
+  res.json({
+    success: true,
+    message: 'Suggestion created'
+  });
+}));
+
+app.put('/suggestion-master/:id', asyncHandler(async (req, res) => {
+  const { type, value } = req.body || {};
+
+  await run(
+    'UPDATE suggestion_master SET type = ?, value = ? WHERE id = ?',
+    [type || '', value || '', req.params.id]
+  );
+
+  res.json({
+    success: true,
+    message: 'Suggestion updated'
+  });
+}));
+
+app.delete('/suggestion-master/:id', asyncHandler(async (req, res) => {
+  await run('DELETE FROM suggestion_master WHERE id = ?', [req.params.id]);
+
+  res.json({
+    success: true,
+    message: 'Suggestion deleted'
+  });
+}));
+
+app.post('/import/complaints', asyncHandler(async (req, res) => {
+  const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+  let count = 0;
+
+  for (const r of rows) {
+    const ticketNo = r['Ticket No'] || r.ticketNo || `CT-${Date.now()}-${count}`;
+
+    await run(
+      `
+      INSERT INTO complaints
+      (ticketNo, clientName, mobile, email, address, issueType, issueDetails, assignedTo, status, priority, slaDue, followupDate, escalationLevel, escalatedTo, escalationRemarks, remarks, internalNotes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        ticketNo,
+        r['Client Name'] || r.clientName || '',
+        r['Mobile'] || r['Mobile No'] || r['Mobile No.'] || r.mobile || '',
+        r['Email'] || r.email || '',
+        r['Address'] || r.address || '',
+        r['Issue Type'] || r.issueType || '',
+        r['Issue Details'] || r.issueDetails || '',
+        r['Assigned To'] || r.assignedTo || '',
+        r['Status'] || r.status || 'Open',
+        r['Priority'] || r.priority || 'Medium',
+        r['SLA Due'] || r.slaDue || '',
+        r['Follow-up Date'] || r.followupDate || '',
+        r['Escalation Level'] || r.escalationLevel || '',
+        r['Escalated To'] || r.escalatedTo || '',
+        r['Escalation Remarks'] || r.escalationRemarks || '',
+        r['Remarks'] || r.remarks || '',
+        r['Internal Notes'] || r.internalNotes || ''
+      ]
+    );
+
+    count++;
+  }
+
+  res.json({
+    success: true,
+    imported: count,
+    message: `${count} complaints imported`
+  });
+}));
+
+app.post('/send-email', asyncHandler(async (req, res) => {
+  const { to, subject, body } = req.body || {};
+
+  if (!to) {
+    return res.status(400).json({
+      success: false,
+      message: 'Recipient email required'
+    });
+  }
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email credentials missing'
+    });
+  }
+
+  const info = await transporter.sendMail({
+    from: `"Support Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: subject || 'Complaint Update',
+    text: body || 'Complaint updated successfully'
+  });
+
+  res.json({
+    success: true,
+    messageId: info.messageId
+  });
+}));
+
+app.use((req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
+initDb()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+      console.log(`Database: ${DB_FILE}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Init failed', err);
+    process.exit(1);
+  });
